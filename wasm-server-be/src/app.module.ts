@@ -7,6 +7,7 @@ import { TaskModule } from './task/task.module';
 import { Job } from './job/entities/job.entity';
 import { ClientSocketModule } from './client-socket/client-socket.module';
 import { DashboardSocketModule } from './dashboard-socket/dashboard-socket.module';
+import { EventEmitterModule } from '@nestjs/event-emitter';
 
 @Module({
   imports: [JobModule, TaskModule, ClientSocketModule, DashboardSocketModule,
@@ -20,6 +21,7 @@ import { DashboardSocketModule } from './dashboard-socket/dashboard-socket.modul
       entities: [Job],
       synchronize: true,
     }),
+    EventEmitterModule.forRoot(),
   ],
   controllers: [AppController],
   providers: [AppService],

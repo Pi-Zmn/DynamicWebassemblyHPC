@@ -4,5 +4,6 @@ import { ClientSocketGateway } from './client-socket.gateway';
 
 @Module({
   providers: [ClientSocketGateway, ClientSocketService],
+  exports: [ClientSocketService]
 })
 export class ClientSocketModule {}
