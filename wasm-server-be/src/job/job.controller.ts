@@ -50,6 +50,11 @@ export class JobController {
     return `Deleted Job #${id}`; 
   }
 
+  @Get('wasm')
+  getWASM() {
+    return this.jobService.getActiveWASM();
+  }
+
   @Get('start/:id')
   startJob(@Param('id') id: number) {
     this.jobService.start(id);

@@ -3,11 +3,13 @@ import { JobDto } from './dto/job.dto';
 import { Job } from './entities/job.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { readFileSync } from 'fs';
+import { join } from 'path';
 
 const defaultJob: Job = {
   id: 1,
   name: 'dummy job',
-  wasm: 'wasm.file',
+  wasm: '/wasm/primes-1/a.out.wasm'
   //input: [1, 2, 3],
   //results: []
 }
@@ -50,6 +52,11 @@ export class JobService {
 
   async remove(id: number) {
     await this.jobRepository.delete(id);
+  }
+
+  async getActiveWASM() {
+    //return readFileSync(path.join(__dirname, this.activeJob.wasm));
+    return readFileSync(join(__dirname, '../..', this.activeJob.wasm))
   }
 
   start(id: number) {
