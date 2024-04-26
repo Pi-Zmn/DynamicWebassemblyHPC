@@ -1,30 +1,17 @@
-import Image from "next/image";
-import styles from "./page.module.css";
-import Test from "@/app/components/test";
-import Link from "next/link";
+import {Card, CardBody, CardHeader, CardSubtitle, CardText, CardTitle} from "react-bootstrap";
 
 export default function Home() {
   return (
-    <main className={styles.main}>
-      <div className={styles.description}>
-        <h1>Home Page</h1>
-        <p>Some descriptoin stuff here</p>
+      <div style={{ margin: 30 }}>
+          <Card>
+              <CardHeader>
+                  <CardTitle>Home Page</CardTitle>
+                  <CardSubtitle>DOINC</CardSubtitle>
+              </CardHeader>
+              <CardBody>
+                  <CardText>Some description</CardText>
+              </CardBody>
+          </Card>
       </div>
-
-      <div>
-        <Test />
-        <ol>
-          <li>
-            <Link href="/dashboard">Dashboard Page</Link>
-          </li>
-          <li>
-            <Link href="/client">Client Page</Link>
-          </li>
-          <li>
-            <Link href="/distribute">Distribute Page</Link>
-          </li>
-        </ol>
-      </div>
-    </main>
   );
 }

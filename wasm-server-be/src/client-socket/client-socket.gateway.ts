@@ -9,7 +9,11 @@ interface ClientInfo {
   device: string
 }
 
-@WebSocketGateway()
+@WebSocketGateway({
+  cors: {
+    origin: 'http://localhost:4000'
+  }
+})
 export class ClientSocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
   constructor(private readonly clientSocketService: ClientSocketService) {}
 

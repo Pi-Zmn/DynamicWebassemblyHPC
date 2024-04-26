@@ -1,3 +1,22 @@
-a {
-  color: chartreuse;
+/* Page Styles */
+.page-container {
+    margin: 30px
 }
+
+.flex-container {
+    display: flex;
+    justify-content: space-around;
+}
+
+/* List Components */
+.list-container {
+    width: 100%;
+    margin: 15px;
+    padding: 15px;
+}
+
+.list-item {
+    margin-bottom: 10px;
+    padding: 15px;
+}
+

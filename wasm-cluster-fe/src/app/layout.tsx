@@ -1,9 +1,7 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import 'bootstrap/dist/css/bootstrap.min.css';
 import "./globals.css";
-import Link from "next/link";
-
-const inter = Inter({ subsets: ["latin"] });
+import Navigation from "@/app/components/navigation";
 
 export const metadata: Metadata = {
   title: "DOINC",
@@ -17,12 +15,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-    <body className={inter.className}>
+    <body>
       <main>
-        <div>
-          <h2>DOINC: Darmstadt Open Infrastructure for Network Computing</h2>
-          <Link href="/">Home Page</Link>
-        </div>
+        <Navigation />
         {children}
       </main>
     </body>
