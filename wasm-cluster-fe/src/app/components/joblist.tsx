@@ -10,7 +10,9 @@ export default function Joblist({ jobs }: JobListProps) {
         <Card className='list-container'>
             <CardTitle>All Jobs</CardTitle>
             <CardBody>
-                {jobs.map((job: Job) => (
+                {jobs.length == 0 ?
+                    <p>No Jobs distributed</p> :
+                    jobs.map((job: Job) => (
                     <Card key={job.id} className='list-item'>
                         <CardTitle>#{job.id} {job.name}</CardTitle>
                         <CardSubtitle>{job.wasm}</CardSubtitle>

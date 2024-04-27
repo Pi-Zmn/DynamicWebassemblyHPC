@@ -5,6 +5,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { readFileSync } from 'fs';
 import { join } from 'path';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 
 const defaultJob: Job = {
   id: 1,
@@ -19,6 +20,7 @@ export class JobService {
   constructor(
     @InjectRepository(Job)
     private jobRepository: Repository<Job>,
+    private eventEmitter: EventEmitter2
   ) {}
 
   activeJob = defaultJob;
@@ -29,7 +31,10 @@ export class JobService {
     const newJob: Job = new Job();
     newJob.name = jobDto.name;
     newJob.wasm = jobDto.wasm;
-    return await this.jobRepository.save(newJob);
+    
+    const savedJob = await this.jobRepository.save(newJob);
+    this.publishJobUpdate()
+    return savedJob
   }
 
   async findAll(): Promise<Job[]> {
@@ -47,11 +52,15 @@ export class JobService {
     }
     jobToUpdate.name = jobDto.name;
     jobToUpdate.wasm = jobDto.wasm;
-    return await this.jobRepository.save(jobToUpdate);
+
+    const updatedJob = await this.jobRepository.save(jobToUpdate)
+    this.publishJobUpdate()
+    return updatedJob;
   }
 
   async remove(id: number) {
     await this.jobRepository.delete(id);
+    this.publishJobUpdate()
   }
 
   async getActiveWASM() {
@@ -61,13 +70,25 @@ export class JobService {
 
   start(id: number) {
     Logger.log(`started Job #${id}`)
+    this.publishActiveJobUpdate()
   }
 
   stop(id: number) {
-      Logger.log(`stopped Job #${id}`)
+    Logger.log(`stopped Job #${id}`)
+    this.publishActiveJobUpdate()
   }
 
   reset(id: number) {
-      Logger.log(`reset Job #${id}`)
+    Logger.log(`reset Job #${id}`)
+    this.publishActiveJobUpdate()
+  }
+
+  async publishJobUpdate() {
+    // Publish 'job-update' Event to notify Dashboard Socket
+    this.eventEmitter.emit('job-update', await this.jobRepository.find())
+  }
+
+  publishActiveJobUpdate() {
+    this.eventEmitter.emit('activeJob-update', this.activeJob)
   }
 }

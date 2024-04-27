@@ -9,8 +9,11 @@ export default function Clientlist({ clients }: ClientListProps) {
     return(
         <Card className='list-container'>
             <CardTitle>Connected Clients</CardTitle>
+            <CardSubtitle><i>Number of connected Clients: {clients.length}</i></CardSubtitle>
             <CardBody>
-                {clients.map((client: Client) => (
+                {clients.length == 0 ?
+                    <p>Currently no connected Clients</p> :
+                    clients.map((client: Client) => (
                     <Card key={client.id} className='list-item'>
                         <CardTitle>{client.device} | <i>{client.os}</i></CardTitle>
                         <CardSubtitle>{client.id}</CardSubtitle>

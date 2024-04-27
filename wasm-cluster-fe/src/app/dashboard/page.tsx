@@ -1,39 +1,42 @@
-'use server'
+'use client'
 
 import {Job} from "@/app/components/job.entity";
 import {Card, CardBody, CardHeader, CardSubtitle, CardTitle} from "react-bootstrap";
 import Joblist from "@/app/components/joblist";
 import Clientlist from "@/app/components/clientlist";
 import {Client} from "@/app/components/client.entity";
+import {useEffect, useState} from "react";
+import {io} from "socket.io-client";
 
-export default async function Dashboard() {
-    // TODO: Connect Websocket
-    // TODO: Retrieve and Updadate Client Data
-    // TODO: Retrieve Job Data (websocket?)
+export default function Dashboard() {
+    const [jobs, setJobs ] = useState<Job[]>([]);
+    const [clients, setClients] = useState<Client[]>([])
 
-    const jobs: Job[] =[]
-    jobs.push({
-        id: 1,
-        name: 'Job-1',
-        wasm: "wasm.file"
-    })
-    jobs.push({
-        id: 2,
-        name: 'Job-2',
-        wasm: "wasm-2.file"
-    })
+    const backendURL: string = 'http://localhost:3001';
+    let socket: any = null
 
-    const clients: Client[] = [];
-    clients.push({
-        id: '1-999xxxfd',
-        os: 'Linux',
-        device: 'Laptop',
-    })
-    clients.push({
-        id: '2-999xxxfd',
-        os: 'Linux',
-        device: 'Laptop',
-    })
+    const connectSocket = () => {
+        const newSocket = io(backendURL)
+        newSocket.on("connect", () => {
+            if (socket != null) {
+                socket.disconnect()
+                console.log("Disconnecting old Socket connection...")
+            }
+            socket = newSocket
+            console.log("Socket connected")
+        })
+
+        newSocket.on('client-update', (data: Client[]) => {
+            setClients(data);
+        })
+        newSocket.on('job-update', (data: Job[]) => {
+            setJobs((data));
+        })
+    }
+
+    useEffect(() => {
+        connectSocket();
+    }, [])
 
     return (
         <Card className='page-container'>
