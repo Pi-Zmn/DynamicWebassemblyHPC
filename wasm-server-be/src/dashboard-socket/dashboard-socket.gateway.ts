@@ -10,7 +10,7 @@ import { Job } from 'src/job/entities/job.entity';
 
 @WebSocketGateway(3001, {
   cors: {
-    origin: 'http://localhost:4000'
+    origin: '*'
   }
 })
 export class DashboardSocketGateway implements OnGatewayConnection, OnGatewayDisconnect {

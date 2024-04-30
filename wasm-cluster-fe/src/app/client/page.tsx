@@ -2,17 +2,18 @@
 
 import {Card, CardBody, CardHeader, CardSubtitle, CardTitle} from "react-bootstrap";
 import {useEffect, useState} from "react";
-import { io } from "socket.io-client";
-import { UAParser } from 'ua-parser-js';
+import {io} from "socket.io-client";
+import {IResult, UAParser, UAParserInstance} from 'ua-parser-js';
 
 export default function Client() {
     // TODO: Properly initialize variables
     const activeJob: string = "TestJob";
-    const backendURL: string = 'http://localhost:3000'
+    const backendURL: string = 'http://' + process.env.NEXT_PUBLIC_BACKEND + ':' + process.env.NEXT_PUBLIC_WS_WORKER;
+    //const backendURL: string = 'http://192.168.2.204:3000'
 
     const [isConnected, setIsConnected] = useState(false);
     let socket: any = null
-    let deviceInfo: any = {} // TODO: Type Device Info (also BE)
+    let deviceInfo: IResult | null = null
 
 
     const getClientInfo = () => {
@@ -32,8 +33,8 @@ export default function Client() {
             setIsConnected(true)
             console.log("Socket connected")
             socket.emit("client-info", {
-                os: deviceInfo.os.name,
-                device: deviceInfo.browser.name
+                os: deviceInfo?.os.name,
+                device: deviceInfo?.browser.name
             })
         })
     }

@@ -11,7 +11,7 @@ interface ClientInfo {
 
 @WebSocketGateway({
   cors: {
-    origin: 'http://localhost:4000'
+    origin: '*'
   }
 })
 export class ClientSocketGateway implements OnGatewayConnection, OnGatewayDisconnect {

@@ -12,7 +12,8 @@ export default function Dashboard() {
     const [jobs, setJobs ] = useState<Job[]>([]);
     const [clients, setClients] = useState<Client[]>([])
 
-    const backendURL: string = 'http://localhost:3001';
+    const backendURL: string = 'http://' + process.env.NEXT_PUBLIC_BACKEND + ':' + process.env.NEXT_PUBLIC_WS_DASHBOARD;
+    //const backendURL: string = 'http://192.168.2.204:3001';
     let socket: any = null
 
     const connectSocket = () => {
@@ -32,6 +33,8 @@ export default function Dashboard() {
         newSocket.on('job-update', (data: Job[]) => {
             setJobs((data));
         })
+
+        // TODO: Active Job(s)
     }
 
     useEffect(() => {
