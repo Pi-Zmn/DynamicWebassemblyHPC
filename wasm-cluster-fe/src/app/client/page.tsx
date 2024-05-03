@@ -4,12 +4,15 @@ import {Card, CardBody, CardHeader, CardSubtitle, CardTitle} from "react-bootstr
 import {useEffect, useState} from "react";
 import {io} from "socket.io-client";
 import {IResult, UAParser, UAParserInstance} from 'ua-parser-js';
+import {Job} from "@/app/components/job.entity";
 
 export default function Client() {
-    // TODO: Properly initialize variables
-    const activeJob: string = "TestJob";
+    const [activeJob, setActiveJob] = useState<Job>({
+        id: 1,
+        name: 'Test job',
+        wasm: '/wasm/primes-1/a.out.wasm'
+    })
     const backendURL: string = 'http://' + process.env.NEXT_PUBLIC_BACKEND + ':' + process.env.NEXT_PUBLIC_WS_WORKER;
-    //const backendURL: string = 'http://192.168.2.204:3000'
 
     const [isConnected, setIsConnected] = useState(false);
     let socket: any = null
@@ -19,7 +22,6 @@ export default function Client() {
     const getClientInfo = () => {
         const parser = new UAParser();
         deviceInfo = parser.getResult();
-        console.log(deviceInfo)
     }
 
     const connectSocket = () => {
@@ -39,16 +41,29 @@ export default function Client() {
         })
     }
 
+    const fetchData = async () => {
+        // TODO: Get Data from Socket (?)
+        const res = await fetch(backendURL + '/job/active')
+        if (res.ok) {
+            const aJ = await res.json() as Job;
+            setActiveJob(aJ)
+            console.log("Active Job:", aJ)
+        } else {
+            console.log("Failed to load active job")
+        }
+    }
+
     useEffect(() => {
         getClientInfo()
         connectSocket();
+        fetchData();
     }, [])
 
     return (
-        <Card className='page-container'>
+        <Card>
             <CardHeader>
                 <CardTitle>Worker Client</CardTitle>
-                <CardSubtitle>Supporting Project <i>{activeJob}</i></CardSubtitle>
+                <CardSubtitle>Supporting Project <i>{activeJob.name}</i></CardSubtitle>
             </CardHeader>
             <CardBody>
                 <p>Status: { isConnected ? "connected" : "disconnected" }</p>

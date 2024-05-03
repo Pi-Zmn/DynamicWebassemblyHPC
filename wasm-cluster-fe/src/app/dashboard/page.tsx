@@ -13,7 +13,6 @@ export default function Dashboard() {
     const [clients, setClients] = useState<Client[]>([])
 
     const backendURL: string = 'http://' + process.env.NEXT_PUBLIC_BACKEND + ':' + process.env.NEXT_PUBLIC_WS_DASHBOARD;
-    //const backendURL: string = 'http://192.168.2.204:3001';
     let socket: any = null
 
     const connectSocket = () => {
@@ -42,7 +41,7 @@ export default function Dashboard() {
     }, [])
 
     return (
-        <Card className='page-container'>
+        <Card>
             <CardHeader>
                 <CardTitle>Admin Dashboard</CardTitle>
                 <CardSubtitle>Overview all available Job</CardSubtitle>

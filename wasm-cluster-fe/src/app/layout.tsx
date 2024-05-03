@@ -18,7 +18,9 @@ export default function RootLayout({
     <body>
       <main>
         <Navigation />
-        {children}
+        <div className="page-container border-top border-dark bg-secondary">
+          {children}
+        </div>
       </main>
     </body>
     </html>

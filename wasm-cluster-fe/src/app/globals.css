@@ -1,6 +1,22 @@
-/* Page Styles */
+/* Navigation */
+.navigation-container {
+    min-height: 10vh;
+}
+
+.navigation-text {
+    max-width: 300px;
+    /* display: none; TODO: on Mobile Screen */
+}
+
+.navigation-img {
+    max-width: 200px;
+    height: auto;
+}
+
+/* Page */
 .page-container {
-    margin: 30px
+    padding: 30px;
+    min-height: 90vh;
 }
 
 .flex-container {

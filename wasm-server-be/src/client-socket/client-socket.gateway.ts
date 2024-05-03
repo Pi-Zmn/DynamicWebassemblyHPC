@@ -1,4 +1,3 @@
-import { DashboardSocketGateway } from 'src/dashboard-socket/dashboard-socket.gateway';
 import { ConnectedSocket, MessageBody, OnGatewayConnection, OnGatewayDisconnect, SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
 import { ClientSocketService } from './client-socket.service';
 import { Server, Socket } from 'socket.io';

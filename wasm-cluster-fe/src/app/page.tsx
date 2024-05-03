@@ -2,16 +2,20 @@ import {Card, CardBody, CardHeader, CardSubtitle, CardText, CardTitle} from "rea
 
 export default function Home() {
   return (
-      <div style={{ margin: 30 }}>
-          <Card>
-              <CardHeader>
-                  <CardTitle>Home Page</CardTitle>
-                  <CardSubtitle>DOINC</CardSubtitle>
-              </CardHeader>
-              <CardBody>
-                  <CardText>Some description</CardText>
-              </CardBody>
-          </Card>
-      </div>
+      <Card>
+          <CardHeader>
+              <CardTitle>Home Page</CardTitle>
+              <CardSubtitle>DOINC</CardSubtitle>
+          </CardHeader>
+          <CardBody>
+              <CardText>Some description</CardText>
+              <ul>
+                  <li><a href="/">Home</a></li>
+                  <li><a href="/dashboard">Dashboard</a></li>
+                  <li><a href="/client">Client Page</a></li>
+                  <li><a href="/distribute">Distribute Page</a></li>
+              </ul>
+          </CardBody>
+      </Card>
   );
 }
