@@ -1,7 +1,10 @@
-import { Controller, Get, Post, Body, Param, Delete, Put, NotFoundException } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Delete, Put, NotFoundException, Res } from '@nestjs/common';
+import { FastifyReply } from 'fastify';
 import { JobService } from './job.service';
 import { JobDto } from './dto/job.dto';
 import { Job } from './entities/job.entity';
+import { join } from 'path';
+import { readFileSync } from 'fs';
 
 @Controller('job')
 export class JobController {
@@ -51,8 +54,12 @@ export class JobController {
   }
 
   @Get('wasm')
-  getWASM() {
-    return this.jobService.getActiveWASM();
+  getWASM(@Res() res: FastifyReply) {
+    // TODO: Send Wasm File with correct Mime Type
+
+    //return this.jobService.getActiveWASM();
+    const filePath = join(__dirname, '../..', this.jobService.activeJob.wasm)
+    res.type('application/wasm').send(readFileSync(filePath))
   }
 
   @Get('start/:id')

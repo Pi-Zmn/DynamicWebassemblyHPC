@@ -63,10 +63,11 @@ export class JobService {
     this.publishJobUpdate()
   }
 
-  async getActiveWASM() {
+  // TODO: Check if needed
+  /*async getActiveWASM() {
     //return readFileSync(path.join(__dirname, this.activeJob.wasm));
     return readFileSync(join(__dirname, '../..', this.activeJob.wasm))
-  }
+  }*/
 
   start(id: number) {
     Logger.log(`started Job #${id}`)
