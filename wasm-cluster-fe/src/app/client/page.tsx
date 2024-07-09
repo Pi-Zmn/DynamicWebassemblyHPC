@@ -1,11 +1,10 @@
 'use client'
 
-import {Card, CardBody, CardHeader, CardSubtitle, CardTitle} from "react-bootstrap";
-import {useEffect, useState} from "react";
+import {Card, CardBody, CardHeader, CardSubtitle, CardTitle, Button, ListGroup, ListGroupItem} from "react-bootstrap";
+import {useEffect, useRef, useState} from "react";
 import {io} from "socket.io-client";
 import {IResult, UAParser} from 'ua-parser-js';
 import {Job} from "@/app/components/job.entity";
-import {Button} from "@restart/ui";
 import Image from "next/image";
 
 export default function Client() {
@@ -18,14 +17,16 @@ export default function Client() {
 
     const [isConnected, setIsConnected] = useState(false);
     let socket: any = null
-    let deviceInfo: IResult | null = null
+    const [deviceInfo, setDeviceInfo] = useState<IResult | undefined>(undefined)
 
     const [wasmExports, setWasmExports] = useState<WebAssembly.Exports | undefined>(undefined)
     const [isComputing, setIsComputing] = useState(false)
 
+    const workerRef = useRef<Worker>()
+
     const getClientInfo = () => {
         const parser = new UAParser();
-        deviceInfo = parser.getResult();
+        setDeviceInfo(parser.getResult());
     }
 
     const connectSocket = () => {
@@ -58,65 +59,101 @@ export default function Client() {
         }
     }
 
-    const setupWASM = async () => {
-        // TODO: Correct use of imprt Object Variable
-        WebAssembly.instantiateStreaming(
-            // Fetch the file and stream into the WebAssembly runtime
-            //fetch(backendURL + '/job/wasm')
-            //fetch('hello-world.wasm')
-            fetch('test.wasm')
-        ).then((result) => {
-            setWasmExports(result.instance.exports);
-        })
+    const initializeWebWorker = () => {
+        /* Web Worker Test */
+        workerRef.current = new Worker('wasm_worker.js')
+        workerRef.current.onmessage = function(event) {
+            console.log('Message received from worker:', event.data);
+        };
+        workerRef.current.postMessage({
+            eventType: 'INIT',
+            eventData: 5,
+            eventId: 1
+        }); // Sending data to the worker
     }
 
-    const runJob = () => {
-        if(wasmExports) {
-            console.log(wasmExports.main())
-            setIsComputing(true)
+    const runJob = async () => {
+        if(workerRef.current) {
+            workerRef.current.postMessage({
+                eventType: 'MUL',
+                eventData: 5,
+                eventId: 1
+            });
         }
     }
 
     useEffect(() => {
-        getClientInfo()
-        connectSocket()
-        fetchData()
-        setupWASM()
+        //getClientInfo()
+        //connectSocket()
+        //fetchData()
+        initializeWebWorker()
     }, [])
 
     return (
-        <Card>
-            <CardHeader>
-                <CardTitle>Worker Client</CardTitle>
-                <CardSubtitle>Supporting Project <i>{activeJob.name}</i></CardSubtitle>
-            </CardHeader>
+        <Card style={{width: '50%', marginLeft: '25%'}}>
             <CardBody>
-                <p>
-                    Status: { isConnected ? "connected" : "disconnected" }
-                    {
-                        isConnected ?
-                            <Image
-                                src="/connected.gif"
-                                alt="isConnected"
-                                width={35}
-                                height={35}
-                                unoptimized
-                            /> :
-                            <></>
-                    }
-                </p>
+                <CardTitle>DOINC Worker</CardTitle>
+                <CardSubtitle>Your Device is part of the DOINC cluster and will be used for crowd computing.</CardSubtitle>
+                <ListGroup style={{marginTop: '20px'}}>
+                    <ListGroupItem className="bg-info">Status of your Client</ListGroupItem>
+                    <ListGroupItem>
+                        Detected Client:&emsp;&emsp;&emsp;&emsp;
+                        {
+                            deviceInfo ?
+                                <span style={{
+                                    fontFamily: 'monospace',
+                                    backgroundColor: '#eee',
+                                    borderRadius: '5px',
+                                    display: 'inline-block',
+                                    padding: '8px'
+                                }}>{deviceInfo.browser.name + " @ " + deviceInfo.os.name}</span> :
+                                "No Information Found"
+                        }
+                    </ListGroupItem>
+                    <ListGroupItem>
+                        Connection Status:&emsp;&emsp;&emsp;
+                        {
+                            isConnected ?
+                                <>
+                                    <Image
+                                        src="/connected2.gif"
+                                        alt="isConnected"
+                                        width={35}
+                                        height={35}
+                                        unoptimized
+                                    />
+                                    &emsp;Connected
+                                </> :
+                                "Connection to Server Failed"
+                        }
+                    </ListGroupItem>
+                    <ListGroupItem>
+                        Supported Project:&emsp;&emsp;&emsp;
+                        {activeJob.name}
+                    </ListGroupItem>
+                    <ListGroupItem>
+                        Current State:&emsp;&emsp;&emsp;&emsp;&emsp;
+                        {
+                            isComputing ?
+                                <>
+                                    <Image
+                                        src="/computing.gif"
+                                        alt="isComputing"
+                                        width={35}
+                                        height={35}
+                                        unoptimized
+                                    />
+                                    &emsp;Work in Progress
+                                </> :
+                                "Waiting for Task"
+                        }
+                    </ListGroupItem>
+                    <ListGroupItem>
+                        Task completed:&emsp;&emsp;&emsp;&emsp;
+                        42
+                    </ListGroupItem>
+                </ListGroup>
                 <Button onClick={runJob}>Run Wasm</Button>
-                {
-                    isComputing ?
-                        <Image
-                            src="/computing.gif"
-                            alt="isComputing"
-                            width={50}
-                            height={50}
-                            unoptimized
-                        /> :
-                        <></>
-                }
             </CardBody>
         </Card>
     )

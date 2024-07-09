@@ -17,6 +17,13 @@ This Project provides a Dynamic High Performance Computing Network
 - Port: 5432
 - Run: `docker compose up`
 
+## Build Wasm
+- Install `emcc` from Emscripten
+- Create Target File (.c .cpp .go etc.)
+- run `emcc hello_world.c -s INVOKE_RUN=0 -o hello_world.js`
+- creates `hello_world.wasm` & `hello_world.js` file
+- `hello_world.js` (Gluecode) initializes WASM sandbox environment (Memory, include/import) in wich the `hello_world.wasm` file can be executed
+- `INVOKE_RUN=0`prevents execution of 'main()'-function during initiation
 
 ## Notes:
 - Device IP: `hostname -I`
