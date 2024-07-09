@@ -1,6 +1,6 @@
 'use client'
 
-import {Card, CardBody, CardHeader, CardSubtitle, CardTitle, Button, ListGroup, ListGroupItem} from "react-bootstrap";
+import {Card, CardBody, CardSubtitle, CardTitle, Button, ListGroup, ListGroupItem} from "react-bootstrap";
 import {useEffect, useRef, useState} from "react";
 import {io} from "socket.io-client";
 import {IResult, UAParser} from 'ua-parser-js';
@@ -116,7 +116,7 @@ export default function Client() {
                             isConnected ?
                                 <>
                                     <Image
-                                        src="/connected2.gif"
+                                        src="/connected.gif"
                                         alt="isConnected"
                                         width={35}
                                         height={35}
