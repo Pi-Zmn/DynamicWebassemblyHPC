@@ -7,7 +7,7 @@ type JobListProps = {
 
 export default function Joblist({ jobs }: JobListProps) {
     return(
-        <Card className='list-container'>
+        <Card className='list-container-big'>
             <CardTitle>All Jobs</CardTitle>
             <CardBody>
                 {jobs.length == 0 ?
@@ -15,7 +15,7 @@ export default function Joblist({ jobs }: JobListProps) {
                     jobs.map((job: Job) => (
                     <Card key={job.id} className='list-item'>
                         <CardTitle>#{job.id} {job.name}</CardTitle>
-                        <CardSubtitle>{job.wasm}</CardSubtitle>
+                        <CardSubtitle>{job.language}</CardSubtitle>
                     </Card>
                 ))}
             </CardBody>

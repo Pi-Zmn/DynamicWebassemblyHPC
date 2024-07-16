@@ -25,10 +25,13 @@
 }
 
 /* List Components */
-.list-container {
-    width: 100%;
+.list-container-big {
+    width: 80%;
     margin: 15px;
-    padding: 15px;
+}
+.list-container-small {
+    width: 20%;
+    margin: 15px;
 }
 
 .list-item {

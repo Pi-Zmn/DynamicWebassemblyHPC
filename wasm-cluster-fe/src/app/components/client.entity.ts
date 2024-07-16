@@ -1,5 +1,6 @@
+import {IResult} from 'ua-parser-js';
+
 export interface Client {
     id: string;
-    os: string;
-    device: string;
+    info: IResult;
 }

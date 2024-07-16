@@ -48,12 +48,7 @@ export default function Client() {
             socket = newSocket
             setIsConnected(true)
             console.log("Socket connected")
-            socket.emit("client-info", {
-                // TODO Update Information
-                os: deviceInfo?.os.name,
-                device: deviceInfo?.browser.name
-                //cpu: deviceInfo?.cpu.name
-            })
+            socket.emit("client-info", UAParser())
         })
     }
 
@@ -111,10 +106,10 @@ export default function Client() {
     }
 
     useEffect(() => {
-        //getClientInfo()
-        //connectSocket()
-        fetchData()
-        createWebWorker()
+        getClientInfo()
+        connectSocket()
+        //fetchData()
+        //createWebWorker()
     }, [])
 
     return (

@@ -1,4 +1,4 @@
-import {Card, CardBody, CardSubtitle, CardTitle} from "react-bootstrap";
+import {Badge, Card, CardBody, CardHeader, CardSubtitle, CardTitle, ListGroup, ListGroupItem} from "react-bootstrap";
 import {Client} from "@/app/components/client.entity";
 
 type ClientListProps = {
@@ -7,18 +7,44 @@ type ClientListProps = {
 
 export default function Clientlist({ clients }: ClientListProps) {
     return(
-        <Card className='list-container'>
-            <CardTitle>Connected Clients</CardTitle>
-            <CardSubtitle><i>Number of connected Clients: {clients.length}</i></CardSubtitle>
+        <Card className='list-container-small'>
+            <CardHeader>
+                <CardTitle>Connected Clients</CardTitle>
+                <CardSubtitle>Number of connected Clients: {clients.length}</CardSubtitle>
+            </CardHeader>
             <CardBody>
-                {clients.length == 0 ?
-                    <p>Currently no connected Clients</p> :
-                    clients.map((client: Client) => (
-                    <Card key={client.id} className='list-item'>
-                        <CardTitle>{client.device} | <i>{client.os}</i></CardTitle>
-                        <CardSubtitle>{client.id}</CardSubtitle>
-                    </Card>
-                ))}
+                {
+                    clients.length > 0 ?
+                        <ListGroup style={{marginTop: '20px'}}>
+                            {
+                                clients.map((client: Client) => (
+                                    <ListGroupItem key={client.id} >
+                                        {
+                                            client.info ?
+                                                <>
+                                                    <span style={{
+                                                        fontFamily: 'monospace',
+                                                        backgroundColor: '#eee',
+                                                        borderRadius: '5px',
+                                                        display: 'inline-block',
+                                                        padding: '8px'
+                                                    }}>{client.info.browser.name} ({client.info.browser.version})
+                                                        @ <i>{client.info.os.name}</i>
+                                                    </span>
+                                                    <br></br>
+                                                    <Badge pill bg="info">{client.info.cpu.architecture}</Badge>
+                                                    {client.info.device.model}  {client.info.device.type} {client.info.device.vendor}
+                                                </>
+                                                :
+                                                <p>Undetected User Agent</p>
+                                        }
+                                    </ListGroupItem>
+                                ))
+                            }
+                        </ListGroup>
+                         :
+                        <p>Currently no connected Clients</p>
+                }
             </CardBody>
         </Card>
     )
