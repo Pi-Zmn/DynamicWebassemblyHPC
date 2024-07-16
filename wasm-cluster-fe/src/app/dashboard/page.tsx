@@ -1,14 +1,15 @@
 'use client'
 
-import {Job} from "@/app/components/job.entity";
-import {Button, Card, CardBody, CardHeader, CardSubtitle, CardTitle} from "react-bootstrap";
-import Joblist from "@/app/components/joblist";
+import {ActiveJob, Job} from "@/app/components/job.entity";
+import {Card, CardBody, CardHeader, CardSubtitle, CardTitle} from "react-bootstrap";
 import Clientlist from "@/app/components/clientlist";
 import {Client} from "@/app/components/client.entity";
 import {useEffect, useState} from "react";
 import {io} from "socket.io-client";
+import Jobview from "@/app/components/jobview";
 
 export default function Dashboard() {
+    const [activeJob, setActiveJob ] = useState<ActiveJob | undefined>();
     const [jobs, setJobs ] = useState<Job[]>([]);
     const [clients, setClients] = useState<Client[]>([])
 
@@ -32,8 +33,9 @@ export default function Dashboard() {
         newSocket.on('job-update', (data: Job[]) => {
             setJobs((data));
         })
-
-        // TODO: Active Job(s)
+        newSocket.on('activeJob-update', (data: ActiveJob) => {
+            setActiveJob((data));
+        })
     }
 
     useEffect(() => {
@@ -42,13 +44,13 @@ export default function Dashboard() {
 
     return (
         <Card>
-            <CardHeader>
+            <CardBody>
                 <CardTitle>Admin Dashboard</CardTitle>
-                <CardSubtitle>Overview all available Job</CardSubtitle>
-            </CardHeader>
-            <CardBody className="flex-container">
-                <Joblist jobs={jobs} />
-                <Clientlist clients={clients}/>
+                <CardSubtitle>Overview of available Jobs and Connected Workers</CardSubtitle>
+                <CardBody className="flex-container">
+                    <Jobview jobs={jobs} activeJob={activeJob}/>
+                    <Clientlist clients={clients}/>
+                </CardBody>
             </CardBody>
         </Card>
     )

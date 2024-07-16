@@ -28,3 +28,20 @@ export interface Job {
     //wasm: string;
     //finalResult?: any;
 }
+
+export interface ActiveJob extends Job {
+    status: Status;
+    tasks: Task[];
+}
+
+/* Task Entety Backend */
+export interface Task {
+    id: number;
+    jobId: number;
+    timeOut: number;
+    scheduledAt: undefined | Date;
+    done: boolean;
+    runTime: undefined | number;
+    input: string[];
+    result: any;
+}
