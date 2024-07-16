@@ -1,4 +1,18 @@
 import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
+import { Task } from './task.entity';
+
+export enum Status {
+    PENDING,
+    ACTIVE,
+    RUNNING,
+    STOPPED,
+    DONE
+}
+
+export enum Language {
+    C_CPP,
+    GO
+}
 
 @Entity()
 export class Job {
@@ -9,11 +23,28 @@ export class Job {
     name: string;
 
     @Column()
-    wasm: string;
+    progress: number;
+
+    @Column()
+    totalTasks: number;
+
+    @Column()
+    taskBatchSize: number;
+
+    @Column()
+    taskTimeOut: number;
+
+    @Column()
+    language: Language
 
     //@Column()
-    //input: any;
+    //wasm: string;
 
     //@Column()
-    //results: any;
+    //finalResult?: any;
+
+    /* none DB Properties */
+    status: Status;
+
+    tasks: Task[];
 }

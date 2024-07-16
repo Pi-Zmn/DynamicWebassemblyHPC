@@ -3,14 +3,15 @@ import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { JobModule } from './job/job.module';
-import { TaskModule } from './task/task.module';
 import { Job } from './job/entities/job.entity';
 import { ClientSocketModule } from './client-socket/client-socket.module';
 import { DashboardSocketModule } from './dashboard-socket/dashboard-socket.module';
 import { EventEmitterModule } from '@nestjs/event-emitter';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
 
 @Module({
-  imports: [JobModule, TaskModule, ClientSocketModule, DashboardSocketModule,
+  imports: [JobModule, ClientSocketModule, DashboardSocketModule,
     TypeOrmModule.forRoot({
       type: 'postgres',
       host: 'localhost',
@@ -22,6 +23,10 @@ import { EventEmitterModule } from '@nestjs/event-emitter';
       synchronize: true,
     }),
     EventEmitterModule.forRoot(),
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', 'wasm'),
+      serveRoot: '/wasm/'
+    }),
   ],
   controllers: [AppController],
   providers: [AppService],

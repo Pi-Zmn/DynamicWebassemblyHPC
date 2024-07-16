@@ -1,5 +1,4 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { WorkerClient } from 'src/client-socket/entity/workerclient.entity';
 
 @Injectable()
 export class DashboardSocketService {

@@ -2,11 +2,7 @@ import { ConnectedSocket, MessageBody, OnGatewayConnection, OnGatewayDisconnect,
 import { ClientSocketService } from './client-socket.service';
 import { Server, Socket } from 'socket.io';
 import { Logger } from '@nestjs/common';
-
-interface ClientInfo {
-  os: string,
-  device: string
-}
+import { ClientInfo } from './entity/workerclient.entity';
 
 @WebSocketGateway({
   cors: {
@@ -33,9 +29,9 @@ export class ClientSocketGateway implements OnGatewayConnection, OnGatewayDiscon
 
   @SubscribeMessage('client-info')
   handleClientInfo(
-    @MessageBody() clientInfo: ClientInfo,
+    @MessageBody() clientInfo: ClientInfo | undefined,
     @ConnectedSocket() client: Socket
   ) {
-    this.clientSocketService.setClientInfo(client.id, clientInfo.os, clientInfo.device)
+    this.clientSocketService.setClientInfo(client.id, clientInfo)
   }
 }

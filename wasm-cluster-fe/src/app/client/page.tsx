@@ -4,31 +4,40 @@ import {Card, CardBody, CardSubtitle, CardTitle, Button, ListGroup, ListGroupIte
 import {useEffect, useRef, useState} from "react";
 import {io} from "socket.io-client";
 import {IResult, UAParser} from 'ua-parser-js';
-import {Job} from "@/app/components/job.entity";
+import {Job, Status} from "@/app/components/job.entity";
 import Image from "next/image";
 
 export default function Client() {
-    const [activeJob, setActiveJob] = useState<Job>({
-        id: 1,
-        name: 'Test job',
-        wasm: '/wasm/primes-1/a.out.wasm'
-    })
+    /* Default Job if no Active Job */
+    const noJob: Job = {
+        id: 0,
+        name: 'No Active Job',
+        status: 5,
+        progress: 0,
+        totalTasks: 0,
+        taskBatchSize: 0,
+        taskTimeOut: 0,
+        language: 2,
+        //wasm: string,
+        //finalResult?: any
+    }
+
     const backendURL: string = 'http://' + process.env.NEXT_PUBLIC_BACKEND + ':' + process.env.NEXT_PUBLIC_WS_WORKER;
 
+    const [activeJob, setActiveJob] = useState<Job>(noJob)
+    const workerRef = useRef<Worker>()
     const [isConnected, setIsConnected] = useState(false);
     let socket: any = null
     const [deviceInfo, setDeviceInfo] = useState<IResult | undefined>(undefined)
-
-    const [wasmExports, setWasmExports] = useState<WebAssembly.Exports | undefined>(undefined)
     const [isComputing, setIsComputing] = useState(false)
 
-    const workerRef = useRef<Worker>()
-
+    /* Read Browser and Client Information from UserAgent */
     const getClientInfo = () => {
         const parser = new UAParser();
         setDeviceInfo(parser.getResult());
     }
 
+    /* Connect as Worker to Backend Socket */
     const connectSocket = () => {
         const newSocket = io(backendURL)
         newSocket.on("connect", () => {
@@ -40,6 +49,7 @@ export default function Client() {
             setIsConnected(true)
             console.log("Socket connected")
             socket.emit("client-info", {
+                // TODO Update Information
                 os: deviceInfo?.os.name,
                 device: deviceInfo?.browser.name
                 //cpu: deviceInfo?.cpu.name
@@ -55,21 +65,39 @@ export default function Client() {
             setActiveJob(aJ)
             console.log("Active Job:", aJ)
         } else {
+            setActiveJob(noJob)
             console.log("Failed to load active job")
         }
     }
 
-    const initializeWebWorker = () => {
-        /* Web Worker Test */
-        workerRef.current = new Worker('wasm_worker.js')
+    const createWebWorker = () => {
+        /* Create Web Worker */
+        workerRef.current = new Worker('wasm_worker_c.js')
+        //workerRef.current = new Worker('wasm_exec.js')
         workerRef.current.onmessage = function(event) {
             console.log('Message received from worker:', event.data);
         };
-        workerRef.current.postMessage({
-            eventType: 'INIT',
-            eventData: 5,
-            eventId: 1
-        }); // Sending data to the worker
+        if(activeJob.id !== noJob.id) {
+            /* Setup WASM environment woth activeJob Files */
+            console.log('Setup WASM environment woth activeJob Files')
+            workerRef.current.postMessage({
+                eventType: 'INIT',
+                eventData: backendURL + '/wasm/' + activeJob.name,
+                eventId: 1
+            });
+        }
+    }
+
+    const initializeWebWorker = () => {
+        if(activeJob.id !== noJob.id && workerRef.current) {
+            /* Setup WASM environment woth activeJob Files */
+            console.log('Setup WASM environment with activeJob Files')
+            workerRef.current.postMessage({
+                eventType: 'INIT',
+                eventData: backendURL + '/wasm/' + activeJob.name + '/' + activeJob.name,
+                eventId: 1
+            });
+        }
     }
 
     const runJob = async () => {
@@ -85,8 +113,8 @@ export default function Client() {
     useEffect(() => {
         //getClientInfo()
         //connectSocket()
-        //fetchData()
-        initializeWebWorker()
+        fetchData()
+        createWebWorker()
     }, [])
 
     return (
@@ -129,7 +157,8 @@ export default function Client() {
                     </ListGroupItem>
                     <ListGroupItem>
                         Supported Project:&emsp;&emsp;&emsp;
-                        {activeJob.name}
+                        {activeJob.name}:&emsp;&emsp;&emsp;
+                        {Status[activeJob.status]}
                     </ListGroupItem>
                     <ListGroupItem>
                         Current State:&emsp;&emsp;&emsp;&emsp;&emsp;
@@ -153,6 +182,7 @@ export default function Client() {
                         42
                     </ListGroupItem>
                 </ListGroup>
+                <Button onClick={initializeWebWorker}>load Wasm</Button>
                 <Button onClick={runJob}>Run Wasm</Button>
             </CardBody>
         </Card>

@@ -7,7 +7,7 @@ self.onmessage = async function(event) {
     switch (eventType) {
         case 'INIT':
             /* Load Wasm File */
-            const wasm = await fetch('http://localhost:8000/hello_world.wasm')
+            const wasm = await fetch(eventData + '.wasm') //fetch('http://localhost:8000/hello_world.wasm')
             if (!wasm.ok) {
                 console.log('Unable to Load Wasm Script')
                 break;
@@ -16,7 +16,7 @@ self.onmessage = async function(event) {
 
             /* Load and Execute Glue Code */
             try {
-                await self.importScripts('http://localhost:8000/hello_world.js')
+                await self.importScripts(eventData + '.js') //self.importScripts('http://localhost:8000/hello_world.js')
                 myModule = await GlueCode({
                     wasmBinary: wasm_binary
                 });
@@ -29,7 +29,17 @@ self.onmessage = async function(event) {
         case 'MUL':
             if (myModule) {
                 /* Execute Wasm-main with Input Args */
-                const result = myModule.callMain(['hi', 'test', '42'])
+                const inputArgs = ['9000000', '10000000']
+                const result = myModule.callMain(inputArgs)
+                //result = myModule._wasmMain(5, 3);
+                console.log(result)
+                /*
+                * self.postMessage({
+                *  eventType,
+                * eventData: await result,
+                * eventId
+                * })
+                * */
                 self.postMessage(result);
             } else {
                 console.log('No WASM Module was instantiated');

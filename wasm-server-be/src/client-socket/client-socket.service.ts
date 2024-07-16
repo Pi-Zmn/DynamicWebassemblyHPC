@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { WorkerClient } from './entity/workerclient.entity';
+import { ClientInfo, WorkerClient } from './entity/workerclient.entity';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 
 @Injectable()
@@ -11,8 +11,7 @@ export class ClientSocketService {
     create(id: string) {
         const newClient: WorkerClient = {
             id,
-            os: '',
-            device: ''
+            info: undefined
         }
         this.connectedWorkerClients.set(id, newClient)
     }
@@ -22,10 +21,9 @@ export class ClientSocketService {
         this.publishClientUpdate()
     }
 
-    setClientInfo(id:string, os: string, device: string) {
+    setClientInfo(id:string, clientInfo: ClientInfo | undefined) {
         const clientToUpdate: WorkerClient = this.connectedWorkerClients.get(id)
-        clientToUpdate.os = os
-        clientToUpdate.device = device
+        clientToUpdate.info = clientInfo
         this.connectedWorkerClients.set(id, clientToUpdate)
         this.publishClientUpdate()
     }
