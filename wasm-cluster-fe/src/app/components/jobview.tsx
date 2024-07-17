@@ -10,7 +10,7 @@ type JobviewProps = {
 export default function Jobview({ jobs, activeJob }: JobviewProps) {
     return(
         <div className="list-container-big">
-            <Activejob activeJob={activeJob} />
+            {activeJob ? <Activejob activeJob={activeJob} /> : <></>}
             <Joblist jobs={jobs} />
         </div>
     )

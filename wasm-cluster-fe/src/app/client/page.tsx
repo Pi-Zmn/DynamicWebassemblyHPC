@@ -4,7 +4,7 @@ import {Card, CardBody, CardSubtitle, CardTitle, Button, ListGroup, ListGroupIte
 import {useEffect, useRef, useState} from "react";
 import {io} from "socket.io-client";
 import {IResult, UAParser} from 'ua-parser-js';
-import {Job, Status} from "@/app/components/job.entity";
+import {ActiveJob, Job, Status} from "@/app/components/job.entity";
 import Image from "next/image";
 
 export default function Client() {
@@ -50,6 +50,16 @@ export default function Client() {
             console.log("Socket connected")
             socket.emit("client-info", UAParser())
         })
+
+        /*newSocket.on('client-update', (data: Client[]) => {
+            setClients(data);
+        })
+        newSocket.on('job-update', (data: Job[]) => {
+            setJobs((data));
+        })
+        newSocket.on('activeJob-update', (data: ActiveJob) => {
+            setActiveJob((data));
+        })*/
     }
 
     const fetchData = async () => {
