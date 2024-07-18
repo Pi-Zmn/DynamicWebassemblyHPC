@@ -160,7 +160,7 @@ export default function Client() {
     }, [activeJob]);
 
     return (
-        <Card style={{width: '50%', marginLeft: '25%'}}>
+        <Card className="client-container">
             <CardBody>
                 <CardTitle>DOINC Worker</CardTitle>
                 <CardSubtitle>Your Device is part of the DOINC cluster and will be used for crowd computing.</CardSubtitle>

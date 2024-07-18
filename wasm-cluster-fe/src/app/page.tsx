@@ -13,6 +13,7 @@ export default function Home() {
                   <li><a href="/">Home</a></li>
                   <li><a href="/dashboard">Dashboard</a></li>
                   <li><a href="/client">Client Page</a></li>
+                  <li><a href="/client-video">Client Video Page</a></li>
                   <li><a href="/distribute">Distribute Page</a></li>
               </ul>
           </CardBody>

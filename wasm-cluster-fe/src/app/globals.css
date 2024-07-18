@@ -5,7 +5,12 @@
 
 .navigation-text {
     max-width: 300px;
-    /* display: none; TODO: on Mobile Screen */
+}
+
+@media only screen and (max-width: 768px) {
+    .navigation-text {
+        display: none;
+    }
 }
 
 .navigation-img {
@@ -19,19 +24,42 @@
     min-height: 90vh;
 }
 
-.flex-container {
-    display: flex;
-    justify-content: space-around;
+@media only screen and (max-width: 768px) {
+    .page-container {
+        padding: 15px;
+    }
+}
+
+@media only screen and (min-width: 768px) {
+    .flex-container {
+        display: flex;
+        justify-content: space-around;
+    }
+}
+
+/* Client Page */
+.client-container {
+    width: 50%;
+    margin-left: 25%;
+}
+
+@media only screen and (max-width: 768px) {
+    .client-container {
+        width: 100%;
+        margin-left: 0;
+    }
 }
 
 /* List Components */
-.list-container-big {
-    width: 75%;
-    margin: 15px;
-}
-.list-container-small {
-    width: 25%;
-    margin: 15px;
+@media only screen and (min-width: 768px) {
+    .list-container-big {
+        width: 75%;
+        margin: 15px;
+    }
+    .list-container-small {
+        width: 25%;
+        margin: 15px;
+    }
 }
 
 .list-item {
