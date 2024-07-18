@@ -4,7 +4,7 @@ import {Card, CardBody, CardSubtitle, CardTitle, Button, ListGroup, ListGroupIte
 import {useEffect, useRef, useState} from "react";
 import {io} from "socket.io-client";
 import {IResult, UAParser} from 'ua-parser-js';
-import {ActiveJob, Job, Status} from "@/app/components/job.entity";
+import {Job, Status, Task} from "@/app/components/job.entity";
 import Image from "next/image";
 
 export default function Client() {
@@ -18,6 +18,9 @@ export default function Client() {
         taskBatchSize: 0,
         taskTimeOut: 0,
         language: 2,
+        startTime: null,
+        endTime: null,
+        runTimeMS: 0
         //wasm: string,
         //finalResult?: any
     }
@@ -27,9 +30,12 @@ export default function Client() {
     const [activeJob, setActiveJob] = useState<Job>(noJob)
     const workerRef = useRef<Worker>()
     const [isConnected, setIsConnected] = useState(false);
-    let socket: any = null
+    const [socket, setSocket] = useState<any>(null)
     const [deviceInfo, setDeviceInfo] = useState<IResult | undefined>(undefined)
     const [isComputing, setIsComputing] = useState(false)
+    const [taskCounter, setTaskCounter] = useState(0)
+    const [computingTime, setComputingTime] = useState(0)
+    const [ready, setReady] = useState(false    )
 
     /* Read Browser and Client Information from UserAgent */
     const getClientInfo = () => {
@@ -45,25 +51,36 @@ export default function Client() {
                 socket.disconnect()
                 console.log("Disconnecting old Socket connection...")
             }
-            socket = newSocket
+            setSocket(newSocket)
             setIsConnected(true)
             console.log("Socket connected")
-            socket.emit("client-info", UAParser())
+            newSocket.emit("client-info", UAParser())
         })
 
-        /*newSocket.on('client-update', (data: Client[]) => {
-            setClients(data);
+        newSocket.on('job-activated', (job: Job) => {
+            console.log(`Job Activated: #${job.id}`)
+            if (activeJob.id != job.id) {
+                setActiveJob(job)
+            }
         })
-        newSocket.on('job-update', (data: Job[]) => {
-            setJobs((data));
+
+        newSocket.on('next-task', (task: Task) => {
+            console.log(`Received Task: #${task.id}`)
+            // TODO Check if task.jobId == activeJob.id | in this line activeJob is 'noJob'
+            if (workerRef && workerRef.current) {
+                workerRef.current.postMessage({
+                    eventType: 'RUN',
+                    eventData: task
+                });
+                setIsComputing(true)
+            } else {
+                console.log('Can Not Run Task')
+            }
         })
-        newSocket.on('activeJob-update', (data: ActiveJob) => {
-            setActiveJob((data));
-        })*/
     }
 
+    /* Omit through WebSocket Communication
     const fetchData = async () => {
-        // TODO: Get Data from Socket (?)
         const res = await fetch(backendURL + '/job/active')
         if (res.ok) {
             const aJ = await res.json() as Job;
@@ -73,54 +90,74 @@ export default function Client() {
             setActiveJob(noJob)
             console.log("Failed to load active job")
         }
-    }
+    } */
 
+    /* Create Web Worker */
     const createWebWorker = () => {
-        /* Create Web Worker */
-        workerRef.current = new Worker('wasm_worker_c.js')
-        //workerRef.current = new Worker('wasm_exec.js')
-        workerRef.current.onmessage = function(event) {
-            console.log('Message received from worker:', event.data);
-        };
+        /* Only Create Worker if activeJob is set */
         if(activeJob.id !== noJob.id) {
-            /* Setup WASM environment woth activeJob Files */
-            console.log('Setup WASM environment woth activeJob Files')
+            /* Terminate previous Worker */
+            if (workerRef && workerRef.current) {
+                workerRef.current.terminate()
+            }
+            /* Create Worker for Programming Language */
+            switch (activeJob.language) {
+                case 0:
+                    /* C_CPP*/
+                    workerRef.current = new Worker('wasm_worker_c.js')
+                    break
+                case 1:
+                    /* GO */
+                    workerRef.current = new Worker('wasm_exec.js')
+                    break
+                default:
+                    /* Default is GO */
+                    workerRef.current = new Worker('wasm_exec.js')
+                    break
+            }
+            /* Setup WASM environment with activeJob Files */
+            console.log('Setup WASM environment for activeJob')
             workerRef.current.postMessage({
                 eventType: 'INIT',
-                eventData: backendURL + '/wasm/' + activeJob.name,
-                eventId: 1
+                eventData: backendURL + '/wasm/' + activeJob.name + '/' + activeJob.name
             });
-        }
-    }
-
-    const initializeWebWorker = () => {
-        if(activeJob.id !== noJob.id && workerRef.current) {
-            /* Setup WASM environment woth activeJob Files */
-            console.log('Setup WASM environment with activeJob Files')
-            workerRef.current.postMessage({
-                eventType: 'INIT',
-                eventData: backendURL + '/wasm/' + activeJob.name + '/' + activeJob.name,
-                eventId: 1
-            });
-        }
-    }
-
-    const runJob = async () => {
-        if(workerRef.current) {
-            workerRef.current.postMessage({
-                eventType: 'MUL',
-                eventData: 5,
-                eventId: 1
-            });
+            workerRef.current.onmessage = function(event) {
+                const { eventType, eventData } = event.data;
+                switch (eventType) {
+                    case 'INIT':
+                        /* Webworker successfully initialized and Socket connected */
+                        if (eventData && socket) {
+                            socket.emit('worker-ready')
+                        }
+                        setReady(true)
+                        break;
+                    case 'RUN':
+                        setIsComputing(false)
+                        setTaskCounter(taskCounter => taskCounter + 1)
+                        if (eventData.runTime) {
+                            setComputingTime(computingTime => computingTime + eventData.runTime)
+                        }
+                        /* WASM successfully executed and Socket connected */
+                        if (eventData && socket) {
+                            socket.emit('client-result', eventData)
+                        }
+                        break;
+                    default:
+                        console.log('Work cant process given Event')
+                }
+            };
         }
     }
 
     useEffect(() => {
         getClientInfo()
         connectSocket()
-        //fetchData()
-        //createWebWorker()
     }, [])
+
+    useEffect(() => {
+        setReady(false)
+        createWebWorker()
+    }, [activeJob]);
 
     return (
         <Card style={{width: '50%', marginLeft: '25%'}}>
@@ -166,7 +203,15 @@ export default function Client() {
                         {Status[activeJob.status]}
                     </ListGroupItem>
                     <ListGroupItem>
-                        Current State:&emsp;&emsp;&emsp;&emsp;&emsp;
+                        Wasm Worker:&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;
+                        {
+                            ready ?
+                                "Ready" :
+                                "NOT INITIALIZED"
+                        }
+                    </ListGroupItem>
+                    <ListGroupItem>
+                        Current State:&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;
                         {
                             isComputing ?
                                 <>
@@ -183,12 +228,18 @@ export default function Client() {
                         }
                     </ListGroupItem>
                     <ListGroupItem>
-                        Task completed:&emsp;&emsp;&emsp;&emsp;
-                        42
+                        Task completed:&emsp;&emsp;&emsp;&emsp;&emsp;
+                        {taskCounter}
+                    </ListGroupItem>
+                    <ListGroupItem>
+                        AVG Run Time:&emsp;&emsp;&emsp;&emsp;&emsp;
+                        {computingTime / taskCounter} ms
+                    </ListGroupItem>
+                    <ListGroupItem>
+                        Total Run Time:&emsp;&emsp;&emsp;&emsp;&emsp;
+                        {computingTime} ms
                     </ListGroupItem>
                 </ListGroup>
-                <Button onClick={initializeWebWorker}>load Wasm</Button>
-                <Button onClick={runJob}>Run Wasm</Button>
             </CardBody>
         </Card>
     )

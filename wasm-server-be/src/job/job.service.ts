@@ -18,8 +18,6 @@ export class JobService {
 
   activeJob: Job | undefined = undefined;
 
-  //TODO Validation
-
   async create(jobDto: JobDto): Promise<Job> {
     const newJob: Job = new Job();
     newJob.name = jobDto.name;
@@ -29,6 +27,9 @@ export class JobService {
     newJob.taskBatchSize = jobDto.taskBatchSize;
     newJob.taskTimeOut = jobDto.taskTimeOut;
     newJob.language = jobDto.language;
+    newJob.startTime = jobDto.startTime;
+    newJob.endTime = jobDto.endTime;
+    newJob.runTimeMS = jobDto.runTimeMS;
     
     const savedJob = await this.jobRepository.save(newJob);
     this.publishJobUpdate()
@@ -55,6 +56,9 @@ export class JobService {
     jobToUpdate.taskBatchSize = jobDto.taskBatchSize;
     jobToUpdate.taskTimeOut = jobDto.taskTimeOut;
     jobToUpdate.language = jobDto.language;
+    jobToUpdate.startTime = jobDto.startTime;
+    jobToUpdate.endTime = jobDto.endTime;
+    jobToUpdate.runTimeMS = jobDto.runTimeMS;
 
     const updatedJob = await this.jobRepository.save(jobToUpdate)
     this.publishJobUpdate()
@@ -133,19 +137,19 @@ export class JobService {
       }
 
       this.activeJob.tasks[nextTaskIndex].scheduledAt = now;
+      this.publishActiveJobUpdate()
       return this.activeJob.tasks[nextTaskIndex]
     }
   }
 
-  recieveResult(task: Task) {
+  receiveResult(task: Task) {
     if(this.activeJob && this.activeJob.id == task.jobId) {
       // TODO combine bouth find loops to only one for performance?
       const updateTaskIndex = this.activeJob.tasks.findIndex((t) => !t.done && t.id == task.id)
-      if (updateTaskIndex > 0) {
+      if (updateTaskIndex >= 0) {
         /* Replace scheduled Task with Result if not already done */
         this.activeJob.tasks[updateTaskIndex] = task
       }
-
       
       /* Check if all tasks are done */
       const pendingTaskIndex = this.activeJob.tasks.findIndex((t) => !t.done)
@@ -183,23 +187,24 @@ export class JobService {
       }
       resultStream.end()
 
-      //TODO Notify Dashboard to load new results.txt
+      this.publishActiveJobResults()
     }
   } 
 
   async allTasksDone() {
     if (this.activeJob && this.activeJob.status != 2 && this.activeJob.tasks.length > 0) {
       await this.saveResults()
-      if (this.activeJob.progress > this.activeJob.totalTasks) {
+      if (this.activeJob.progress < this.activeJob.totalTasks) {
         /* Prepare Job with new Tasks */
         this.update(this.activeJob.id, new JobDto(this.activeJob))
         this.activeJob.tasks = await this.generateTasks(this.activeJob);
-        this.start()
-      } else {
+        await this.start()
+      } else {  
         /* Job is DONE */
         this.activeJob.status = 4
+        this.activeJob.endTime = new Date()
+        this.activeJob.runTimeMS = this.activeJob.endTime.getTime() - this.activeJob.startTime.getTime()
         this.update(this.activeJob.id, new JobDto(this.activeJob))
-        this.activeJob = undefined
         this.publishActiveJobUpdate() 
       }
     }
@@ -213,28 +218,42 @@ export class JobService {
         /* Stop and Save Previous Active Job */
         if (this.activeJob) {
           this.stop()
-          await this.saveResults()
-          await this.update(this.activeJob.id, new JobDto(this.activeJob))
+          if (this.activeJob && this.activeJob.progress >= this.activeJob.totalTasks) {
+            await this.saveResults()
+            await this.update(this.activeJob.id, new JobDto(this.activeJob))
+          }
         }
         this.activeJob = job;
-        this.activeJob.status = 1; 
-        this.activeJob.progress = job.progress;
-        this.activeJob.tasks = await this.generateTasks(job);
-        if (job.totalTasks == 0) {
-          this.activeJob.totalTasks = await this.getNumOfTotalTasks(job.name)
-          /* Save totalTasks to DB */
-          this.update(this.activeJob.id, new JobDto(this.activeJob))
-        }
-      this.publishActiveJobUpdate()
+        /* Check if Job is Already done */
+        if (this.activeJob.progress >= this.activeJob.totalTasks) {
+          this.activeJob.status = 4;
+        } else {
+          this.activeJob.status = 1; 
+          this.activeJob.tasks = await this.generateTasks(job);
+          if (job.totalTasks == 0) {
+            this.activeJob.totalTasks = await this.getNumOfTotalTasks(job.name)
+            /* Save totalTasks to DB */
+            this.update(this.activeJob.id, new JobDto(this.activeJob))
+          }
+        }       
+        this.publishActiveJobUpdate()
+        this.publishJobActivated()
     }   
   }
 
-  start(): boolean {
+  async start(): Promise<boolean> {
     if (this.activeJob) {
       Logger.log(`started Job: ${this.activeJob.name}`)
+      /* Generate Tasks if Job has been Reset */
+      if (this.activeJob && this.activeJob.tasks.length == 0) {
+        this.activeJob.tasks = await this.generateTasks(this.activeJob);
+      }
       this.activeJob.status = 2
-      // TODO Notify Workers
+      if (this.activeJob && !this.activeJob.startTime) {
+        this.activeJob.startTime = new Date()
+      }
       this.publishActiveJobUpdate()
+      this.publishJobStarted() 
       return true
     }
     return false 
@@ -245,9 +264,9 @@ export class JobService {
       Logger.log(`stopped Job: ${this.activeJob.name}`)
       this.activeJob.status = 3
       this.publishActiveJobUpdate() 
-      return true 
+      return true
     }
-    return false 
+    return false
   }
 
   reset(): boolean {
@@ -256,6 +275,9 @@ export class JobService {
       this.activeJob.status = 3
       this.activeJob.progress = 0
       this.activeJob.tasks = []
+      this.activeJob.startTime = null
+      this.activeJob.endTime = null
+      this.activeJob.runTimeMS = 0
 
       /* Delete result.txt */
       const resultStream = createWriteStream(
@@ -272,12 +294,28 @@ export class JobService {
     return false 
   }
 
+  /* Publish 'job-update' Event to notify Dashboard Socket */
   async publishJobUpdate() {
-    /* Publish 'job-update' Event to notify Dashboard Socket */
     this.eventEmitter.emit('job-update', await this.jobRepository.find())
   }
 
+  /* Publish 'activeJob-update' Event to notify Dashboard Socket */
   publishActiveJobUpdate() {
     this.eventEmitter.emit('activeJob-update', this.activeJob)
+  }
+
+  /* Publish 'activeJob-results' Event to notify Dashboard Socket */
+  publishActiveJobResults() {
+    this.eventEmitter.emit('activeJob-results', this.activeJob.name)
+  }
+
+  /* Publish 'job-activated' Event to notify Worker Socket */
+  publishJobActivated() {
+    this.eventEmitter.emit('job-activated', new JobDto(this.activeJob))
+  }
+
+  /* Publish 'job-started' Event to notify Worker Socket */
+  publishJobStarted() {
+    this.eventEmitter.emit('job-started')
   }
 }

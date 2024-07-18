@@ -37,6 +37,15 @@ export class Job {
     @Column()
     language: Language
 
+    @Column({nullable: true})
+    startTime: Date | null;
+
+    @Column({nullable: true})
+    endTime: Date | null;
+
+    @Column()
+    runTimeMS: number;
+
     //@Column()
     //wasm: string;
 

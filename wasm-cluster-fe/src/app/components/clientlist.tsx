@@ -31,6 +31,7 @@ export default function Clientlist({ clients }: ClientListProps) {
                                                     }}>{client.info.browser.name} ({client.info.browser.version})
                                                         @ <i>{client.info.os.name}</i>
                                                     </span>
+                                                    {client.ready ? 'READY' : 'NOT_READY'}
                                                     <br></br>
                                                     <Badge pill bg="info">{client.info.cpu.architecture}</Badge>
                                                     {client.info.device.model}  {client.info.device.type} {client.info.device.vendor}

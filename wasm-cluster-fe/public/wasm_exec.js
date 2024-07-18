@@ -565,7 +565,7 @@ const go = new Go();
 
 /* Start Web Worker Logic Here */
 self.onmessage = async function(event) {
-	const { eventType, eventData, eventId } = event.data;
+	const { eventType, eventData } = event.data;
 	switch (eventType) {
 		case 'INIT':
 			try {
@@ -573,16 +573,31 @@ self.onmessage = async function(event) {
 				wasmInstance = await WebAssembly.instantiateStreaming(fetch(eventData + '.wasm'), go.importObject)
 				go.run(wasmInstance.instance);
 				console.log('Successfully instantiated WASM Module');
+				self.postMessage({
+					eventType: eventType,
+					eventData: true
+				});
 			} catch (e) {
 				console.log('Unable to Load Gluecode Script')
 				console.log(e)
 			}
 			break;
-		case 'MUL':
+		case 'RUN':
 			if (wasmInstance) {
+				const startTime = performance.now();
+				let task = eventData
+				console.log(task.input)
 				/* Execute Go Wasm instance */
-				const result = wasmMain("9000000", "10000000")
-				self.postMessage(result);
+				task.result = await wasmMain(...task.input)
+				console.log(task.result)
+				const endTime = performance.now();
+				console.log(`Execution time: ${endTime - startTime} ms`);
+				task.done = true
+				task.runTime = endTime - startTime
+				self.postMessage({
+					eventType: eventType,
+					eventData: task
+				});
 			} else {
 				console.log('No WASM Module was instantiated');
 			}

@@ -58,4 +58,8 @@ export class DashboardSocketGateway implements OnGatewayConnection, OnGatewayDis
     this.server.emit('activeJob-update', activeJob)
   }
 
+  @OnEvent('activeJob-results')
+  activeJobResults(activeJob: Job | undefined) {
+    this.server.emit('activeJob-results')
+  }
 }

@@ -1,5 +1,6 @@
 export interface WorkerClient {
     id: string;
+    ready: boolean;
     info: ClientInfo | undefined;
 }
 

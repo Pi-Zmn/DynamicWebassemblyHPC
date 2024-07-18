@@ -39,3 +39,24 @@
     padding: 15px;
 }
 
+/* Active Job Component */
+.progress-label {
+    text-align: center;
+}
+
+.button-container {
+    display: flex;
+    padding: 15px;
+    justify-content: space-between;
+}
+
+.button-float-left {
+    /*display: flex;
+    justify-content: space-between;
+    flex-grow: 2*/
+}
+
+.button-float-right {
+   /* flex-grow: 1;*/
+}
+

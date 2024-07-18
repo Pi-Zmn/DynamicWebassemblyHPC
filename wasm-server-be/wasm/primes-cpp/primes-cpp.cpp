@@ -17,17 +17,17 @@ bool is_prime(unsigned long n) {
     return true;
 }
 
-void generate_primes(unsigned long start,unsigned long end, std::vector<unsigned long>& result){
+void generate_primes(unsigned long start,unsigned long end, unsigned long& result){
     for (unsigned long i = start; i < end + 1; i++) {
         if (is_prime(i)) {
-            result.push_back(i);
+            result++;
         }
     }
 }
 
 EMSCRIPTEN_KEEPALIVE
-std::vector<unsigned long> wasmMain(unsigned long start_num, unsigned long end_num) {
-    std::vector<unsigned long> result {};
+unsigned long wasmMain(unsigned long start_num, unsigned long end_num) {
+    unsigned long result = 0;
     std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
     generate_primes(start_num, end_num, result);
     std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
@@ -38,7 +38,7 @@ std::vector<unsigned long> wasmMain(unsigned long start_num, unsigned long end_n
     }
     */
 
-    std::cout << "Found " << result.size() << " Prime numbers in range from " 
+    std::cout << "Found " << result << " Prime numbers in range from "
     << start_num << " to " << end_num << "!" << std::endl;
     std::cout << "Time difference = " << std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count() << "[µs]" << std::endl;
     std::cout << "Time difference = " << std::chrono::duration_cast<std::chrono::nanoseconds> (end - begin).count() << "[ns]" << std::endl;
@@ -56,7 +56,7 @@ int main(int argc, char *argv[]) {
         end_num = std::stoul (argv[2],nullptr,0);
     }
 
-    std::vector<unsigned long> result = wasmMain(start_num, end_num);
+    unsigned long result = wasmMain(start_num, end_num);
 
-    return result.size();
+    return result;
 }

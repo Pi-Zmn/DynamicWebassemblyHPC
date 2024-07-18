@@ -6,18 +6,22 @@ import Clientlist from "@/app/components/clientlist";
 import {Client} from "@/app/components/client.entity";
 import {useEffect, useState} from "react";
 import {io} from "socket.io-client";
-import Jobview from "@/app/components/jobview";
+import Activejob from "@/app/components/activejob";
+import Joblist from "@/app/components/joblist";
+import {act} from "react-dom/test-utils";
 
 export default function Dashboard() {
     const [activeJob, setActiveJob ] = useState<ActiveJob | undefined>();
     const [jobs, setJobs ] = useState<Job[]>([]);
     const [clients, setClients] = useState<Client[]>([])
+    const [result, setResult] = useState<string>("");
 
-    const backendURL: string = 'http://' + process.env.NEXT_PUBLIC_BACKEND + ':' + process.env.NEXT_PUBLIC_WS_DASHBOARD;
+    const backendURLSocket: string = 'http://' + process.env.NEXT_PUBLIC_BACKEND + ':' + process.env.NEXT_PUBLIC_WS_DASHBOARD;
+    const backendURLAPI: string = 'http://' + process.env.NEXT_PUBLIC_BACKEND + ':' + process.env.NEXT_PUBLIC_WS_WORKER;
     let socket: any = null
 
     const connectSocket = () => {
-        const newSocket = io(backendURL)
+        const newSocket = io(backendURLSocket)
         newSocket.on("connect", () => {
             if (socket != null) {
                 socket.disconnect()
@@ -36,11 +40,27 @@ export default function Dashboard() {
         newSocket.on('activeJob-update', (data: ActiveJob) => {
             setActiveJob((data));
         })
+        newSocket.on('activeJob-results', () => {
+            getResults();
+        })
+    }
+
+    const getResults = async () => {
+        if (activeJob) {
+            const res = await fetch(backendURLAPI + '/wasm/' + activeJob.name + '/result.txt')
+            if (res.ok) {
+                setResult(await res.text())
+            }
+        }
     }
 
     useEffect(() => {
         connectSocket();
     }, [])
+
+    useEffect(() => {
+        getResults();
+    }, [activeJob])
 
     return (
         <Card>
@@ -48,7 +68,10 @@ export default function Dashboard() {
                 <CardTitle>Admin Dashboard</CardTitle>
                 <CardSubtitle>Overview of available Jobs and Connected Workers</CardSubtitle>
                 <CardBody className="flex-container">
-                    <Jobview jobs={jobs} activeJob={activeJob}/>
+                    <div className="list-container-big">
+                        {activeJob ? <Activejob activeJob={activeJob} jobResults={result}/> : <></>}
+                        <Joblist jobs={jobs}/>
+                    </div>
                     <Clientlist clients={clients}/>
                 </CardBody>
             </CardBody>

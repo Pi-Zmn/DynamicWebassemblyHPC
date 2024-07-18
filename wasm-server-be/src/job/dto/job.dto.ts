@@ -10,6 +10,9 @@ export class JobDto {
         this.taskBatchSize = job.taskBatchSize;
         this.taskTimeOut = job.taskTimeOut;
         this.language = job.language;
+        this.startTime = job.startTime;
+        this.endTime = job.endTime;
+        this.runTimeMS = job.runTimeMS;
     }
 
     id: number;
@@ -27,6 +30,12 @@ export class JobDto {
     taskTimeOut: number;
 
     language: Language;
+
+    startTime: Date | null;
+
+    endTime: Date | null;
+
+    runTimeMS: number;
 
     //wasm: string;
 

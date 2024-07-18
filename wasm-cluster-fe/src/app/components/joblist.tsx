@@ -45,12 +45,12 @@ export default function Joblist({ jobs }: JobListProps) {
                             Some description about this awesome task and whats its purpose! Lorem ipsum etc..
                         </CardText>
                         <div>
-                            <ProgressBar variant="success" now={Math.floor(job.progress/job.totalTasks)*100} />
-                            {(job.progress / job.totalTasks) * 100 + '%'}
+                            <ProgressBar variant="success" min={0} max={job.totalTasks} now={job.progress}/>
+                            <p className="progress-label">{(job.progress / job.totalTasks) * 100 + '%'}</p>
                             <Button variant="primary" onClick={() => acvtivate(job.id)}>Activate</Button>
                         </div>
                     </Card>
-                ))}
+                    ))}
             </CardBody>
         </Card>
     )

@@ -78,7 +78,7 @@ export class JobController {
 
   @Get('start')
   async startJob() {
-    if(this.jobService.start()) {
+    if(await this.jobService.start()) {
       return true
     }
     throw new ForbiddenException(`Can not Start Job`) 

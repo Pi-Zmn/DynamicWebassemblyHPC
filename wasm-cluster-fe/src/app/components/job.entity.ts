@@ -25,6 +25,9 @@ export interface Job {
     taskBatchSize: number;
     taskTimeOut: number;
     language: Language;
+    startTime: Date | null;
+    endTime: Date | null;
+    runTimeMS: number;
     //wasm: string;
     //finalResult?: any;
 }
@@ -34,7 +37,7 @@ export interface ActiveJob extends Job {
     tasks: Task[];
 }
 
-/* Task Entety Backend */
+/* Task Entity Backend */
 export interface Task {
     id: number;
     jobId: number;
