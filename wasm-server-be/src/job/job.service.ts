@@ -143,7 +143,7 @@ export class JobService {
   }
 
   receiveResult(task: Task) {
-    if(this.activeJob && this.activeJob.id == task.jobId) {
+    if(this.activeJob && this.activeJob.id == task.jobId && this.activeJob.status != 4) {
       // TODO combine bouth find loops to only one for performance?
       const updateTaskIndex = this.activeJob.tasks.findIndex((t) => !t.done && t.id == task.id)
       if (updateTaskIndex >= 0) {
@@ -218,14 +218,14 @@ export class JobService {
         /* Stop and Save Previous Active Job */
         if (this.activeJob) {
           this.stop()
-          if (this.activeJob && this.activeJob.progress >= this.activeJob.totalTasks) {
+          if (this.activeJob && this.activeJob.progress < this.activeJob.totalTasks) {
             await this.saveResults()
             await this.update(this.activeJob.id, new JobDto(this.activeJob))
           }
         }
         this.activeJob = job;
         /* Check if Job is Already done */
-        if (this.activeJob.progress >= this.activeJob.totalTasks) {
+        if (this.activeJob.progress != 0 && this.activeJob.progress >= this.activeJob.totalTasks) {
           this.activeJob.status = 4;
         } else {
           this.activeJob.status = 1; 

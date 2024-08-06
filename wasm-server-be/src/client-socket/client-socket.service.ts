@@ -41,6 +41,7 @@ export class ClientSocketService {
             worker.ready = false
             this.connectedWorkerClients.set(worker.id, worker)
         })
+        this.publishClientUpdate()
     }
 
     /* Publish 'client-update' Event to notify Dashboard Socket */

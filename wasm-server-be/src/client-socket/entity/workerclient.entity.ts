@@ -4,7 +4,6 @@ export interface WorkerClient {
     info: ClientInfo | undefined;
 }
 
-// TODO: Use User Agent Info here
 export interface ClientInfo {
     ua: string,
     browser: {

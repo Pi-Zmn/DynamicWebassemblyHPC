@@ -122,7 +122,7 @@ export default function Activejob({ activeJob, jobResults }: ActiveJobProps) {
                 <div className="button-container">
                     <div className="button-float-left">
                         <Button variant="success" onClick={startjob} disabled={activeJob.status == 4 || activeJob.status == 2}>Start</Button>
-                        <Button variant="danger" onClick={stoptjob} disabled={activeJob.status == 4 || activeJob.status == 3}>Stop</Button>
+                        <Button className="button-float-left-stop" variant="danger" onClick={stoptjob} disabled={activeJob.status == 4 || activeJob.status == 3}>Stop</Button>
                     </div>
                     <Button variant="warning" onClick={resetJob} className="button-float-right" disabled={activeJob.status == 2}>Reset</Button>
                 </div>

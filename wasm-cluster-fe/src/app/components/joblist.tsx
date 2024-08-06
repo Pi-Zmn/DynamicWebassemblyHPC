@@ -46,7 +46,7 @@ export default function Joblist({ jobs }: JobListProps) {
                         </CardText>
                         <div>
                             <ProgressBar variant="success" min={0} max={job.totalTasks} now={job.progress}/>
-                            <p className="progress-label">{(job.progress / job.totalTasks) * 100 + '%'}</p>
+                            <p className="progress-label">{job.totalTasks > 0 ? Math.floor((job.progress / job.totalTasks) * 100) : 0}%</p>
                             <Button variant="primary" onClick={() => acvtivate(job.id)}>Activate</Button>
                         </div>
                     </Card>
