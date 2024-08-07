@@ -11,7 +11,8 @@ export enum Status {
 
 export enum Language {
     C_CPP,
-    GO
+    GO,
+    PYTHON
 }
 
 @Entity()

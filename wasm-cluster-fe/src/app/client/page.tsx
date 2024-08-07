@@ -110,6 +110,10 @@ export default function Client() {
                     /* GO */
                     workerRef.current = new Worker('wasm_exec.js')
                     break
+                case 2:
+                    /* PYTHON */
+                    workerRef.current = new Worker('wasm_worker_py.js')
+                    break
                 default:
                     /* Default is GO */
                     workerRef.current = new Worker('wasm_exec.js')
@@ -143,7 +147,7 @@ export default function Client() {
                         }
                         break;
                     default:
-                        console.log('Work cant process given Event')
+                        console.log('Worker cant process given Event')
                 }
             };
         }

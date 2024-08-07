@@ -12,6 +12,7 @@ export enum Status {
 export enum Language {
     C_CPP,
     GO,
+    PYTHON,
     NOT_FOUND
 }
 

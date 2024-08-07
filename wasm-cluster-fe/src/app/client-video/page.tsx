@@ -114,7 +114,7 @@ export default function ClientVideo() {
                         }
                         break;
                     default:
-                        console.log('Work cant process given Event')
+                        console.log('Worker cant process given Event')
                 }
             };
         }

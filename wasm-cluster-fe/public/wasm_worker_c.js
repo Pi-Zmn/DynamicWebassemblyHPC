@@ -1,4 +1,4 @@
-// web worker
+// web worker C & C++ (Emscripten)
 
 let myModule;
 
@@ -34,10 +34,8 @@ self.onmessage = async function(event) {
             if (myModule) {
                 const startTime = performance.now();
                 let task = eventData
-                console.log(task.input)
                 /* Execute Wasm-main with Input Args */
                 task.result = await myModule.callMain(task.input)
-                console.log(task.result)
                 const endTime = performance.now();
                 console.log(`Execution time: ${endTime - startTime} ms`);
                 task.done = true
@@ -51,6 +49,6 @@ self.onmessage = async function(event) {
             }
             break;
         default:
-            console.log('Work cant process given Event')
+            console.log('Worker cant process given Event')
     }
 };
