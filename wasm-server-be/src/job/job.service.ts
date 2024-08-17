@@ -1,6 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { JobDto } from './dto/job.dto';
-import { Job } from './entities/job.entity';
+import { Job, Status } from './entities/job.entity';
 import { Task } from './entities/task.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -116,7 +116,7 @@ export class JobService {
   */
   getNextTasks(): Task | null {
     /* only get task from a active and running Job */
-    if(this.activeJob && this.activeJob.status == 2) {
+    if(this.activeJob && Status[this.activeJob.status] == 'RUNNING') {
       // TODO: Improve Scheduling Algorithm (Currently FIFO?)
       const now = new Date()
       const nextTaskIndex = this.activeJob.tasks.findIndex((t) => {
@@ -143,7 +143,7 @@ export class JobService {
   }
 
   receiveResult(task: Task) {
-    if(this.activeJob && this.activeJob.id == task.jobId && this.activeJob.status != 4) {
+    if(this.activeJob && this.activeJob.id == task.jobId && Status[this.activeJob.status] != 'DONE') {
       // TODO combine bouth find loops to only one for performance?
       const updateTaskIndex = this.activeJob.tasks.findIndex((t) => !t.done && t.id == task.id)
       if (updateTaskIndex >= 0) {
@@ -155,7 +155,7 @@ export class JobService {
       const pendingTaskIndex = this.activeJob.tasks.findIndex((t) => !t.done)
       if (pendingTaskIndex == -1) {
         /* All Tasks Done | Stop Job and get new Tasks */
-        if (this.activeJob.status == 2) {
+        if (Status[this.activeJob.status] == 'RUNNING') {
           Logger.log('Task Batch Done')
           this.stop()
           this.allTasksDone()
@@ -168,7 +168,7 @@ export class JobService {
 
   /* Saves all Results from Task in .txt and Updates Job Progress */ 
   async saveResults() {
-    if (this.activeJob && this.activeJob.status != 2) {
+    if (this.activeJob && Status[this.activeJob.status] != 'RUNNING') {
       const resultStream = createWriteStream(
         path.join(__dirname, '../../wasm', this.activeJob.name, 'result.txt'),
         {flags: 'a'}
@@ -192,7 +192,7 @@ export class JobService {
   } 
 
   async allTasksDone() {
-    if (this.activeJob && this.activeJob.status != 2 && this.activeJob.tasks.length > 0) {
+    if (this.activeJob && Status[this.activeJob.status] != 'RUNNING' && this.activeJob.tasks.length > 0) {
       await this.saveResults()
       if (this.activeJob.progress < this.activeJob.totalTasks) {
         /* Prepare Job with new Tasks */
@@ -214,7 +214,7 @@ export class JobService {
     Logger.log(`activated Job #${job.id}`)
     if(!this.activeJob ||
        this.activeJob && this.activeJob.id !== job.id && 
-       this.activeJob.status !== 2) {
+       Status[this.activeJob.status] !== 'RUNNING') {
         /* Stop and Save Previous Active Job */
         if (this.activeJob) {
           this.stop()

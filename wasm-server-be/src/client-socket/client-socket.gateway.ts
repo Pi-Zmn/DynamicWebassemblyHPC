@@ -23,15 +23,13 @@ export class ClientSocketGateway implements OnGatewayConnection, OnGatewayDiscon
   server: Server;
   
   handleConnection(@ConnectedSocket() client: Socket) {
-    Logger.log(`client-WS (${client.id}) connected`);
-
-    this.clientSocketService.create(client.id);
+    Logger.log(`client-WS (${client.id}) connected`)
+    this.clientSocketService.create(client.id)
   }
 
   handleDisconnect(@ConnectedSocket() client: Socket) {
-    Logger.log(`client-WS (${client.id}) disconnected`);
-
-    this.clientSocketService.remove(client.id);
+    Logger.log(`client-WS (${client.id}) disconnected`)
+    this.clientSocketService.remove(client.id)
   }
 
   @SubscribeMessage('client-info')
@@ -40,13 +38,13 @@ export class ClientSocketGateway implements OnGatewayConnection, OnGatewayDiscon
     @ConnectedSocket() client: Socket
   ) {
     /* Update Client Info with User Agent */
-    this.clientSocketService.setClientInfo(client.id, clientInfo)
-
+    this.clientSocketService.setClientInfo(client.id, clientInfo);
     /* Emit 'job-activated' to Worker if activeJob */
     if (this.jobService.activeJob) {
       this.server.to(client.id).emit(
         'job-activated', 
-        new JobDto(this.jobService.activeJob))
+        new JobDto(this.jobService.activeJob)
+      )
     }
   }
 
@@ -57,8 +55,6 @@ export class ClientSocketGateway implements OnGatewayConnection, OnGatewayDiscon
     Logger.log(`client-WS (${client.id}) ready`)
     /* Client is Ready to Work */
     this.clientSocketService.setClientReady(client.id)
-
-    /* Emit Next Task to Worker if activeJob up and RUNNING */
     this.sendTaskToWorker(client.id)
   }
 
@@ -67,11 +63,9 @@ export class ClientSocketGateway implements OnGatewayConnection, OnGatewayDiscon
     @MessageBody() clientResult: Task,
     @ConnectedSocket() client: Socket
   ) {
-    Logger.log(`client-WS (${client.id}) send Result`);
-    /* Receive Result */
+    Logger.log(`client-WS (${client.id}) send Result`)
+    /* Forward Result to JobService and send Next Task to Worker */
     this.jobService.receiveResult(clientResult)
-
-    /* Emit Next Task to Worker if activeJob up and RUNNING */
     this.sendTaskToWorker(client.id)
   }
 
@@ -84,8 +78,21 @@ export class ClientSocketGateway implements OnGatewayConnection, OnGatewayDiscon
           'next-task', 
           nextTask
         )
+      } 
+      else {
+        this.server.to(id).emit(
+          'no-task', 
+          new JobDto(this.jobService.activeJob)
+        )
       }
     }
+  }
+
+  @SubscribeMessage('request-task')
+  handelWorkerRequestsTask(
+    @ConnectedSocket() client: Socket
+  ) {
+    this.sendTaskToWorker(client.id)
   }
 
   @OnEvent('job-activated')

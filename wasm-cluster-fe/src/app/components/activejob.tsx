@@ -7,7 +7,10 @@ import {
     CardHeader,
     CardSubtitle, CardText,
     CardTitle, ListGroup, ListGroupItem,
-    ProgressBar
+    ProgressBar,
+    ToastContainer,
+    Toast,
+    ToastHeader, ToastBody
 } from "react-bootstrap";
 import {useEffect, useState} from "react";
 
@@ -19,25 +22,33 @@ type ActiveJobProps = {
 export default function Activejob({ activeJob, jobResults }: ActiveJobProps) {
     const [jobsDone, setJobsDone] = useState<number>(0);
     const [jobsRunning, setJobsRunning] = useState<number>(0);
+    const [showToast, setShowToast] = useState(false)
+    const [toastText, setToastText] = useState("")
 
 
     const backendURL: string = 'http://' + process.env.NEXT_PUBLIC_BACKEND + ':' + process.env.NEXT_PUBLIC_WS_WORKER;
     const startjob = async () => {
         const res = await fetch(backendURL + '/job/start')
         if (res.ok) {
-            // TODO: Spawn toast -Job#ID activated
+            /* Show Toast with Text */
+            setShowToast(true)
+            setToastText(`Successfully STARTED Job ${activeJob.name} #${activeJob.id}`)
         }
     }
     const stoptjob = async () => {
         const res = await fetch(backendURL + '/job/stop')
         if (res.ok) {
-            // TODO: Spawn toast -Job#ID activated
+            /* Show Toast with Text */
+            setShowToast(true)
+            setToastText(`Successfully STOPPED Job ${activeJob.name} #${activeJob.id}`)
         }
     }
     const resetJob = async () => {
         const res = await fetch(backendURL + '/job/reset')
         if (res.ok) {
-            // TODO: Spawn toast -Job#ID activated
+            /* Show Toast with Text */
+            setShowToast(true)
+            setToastText(`Successfully RESET Job ${activeJob.name} #${activeJob.id}`)
         }
     }
 
@@ -57,88 +68,101 @@ export default function Activejob({ activeJob, jobResults }: ActiveJobProps) {
         }
     }
 
+    const hideToast = () => setShowToast(false)
+
     useEffect(() => {
         calculateValues()
     }, [activeJob]);
 
     return(
-        <Card style={{marginBottom: "20px"}}>
-            <CardHeader>
-                <CardTitle>{activeJob.name}</CardTitle>
-                <CardSubtitle>
-                    {Status[activeJob.status]}
-                    &emsp;
-                    <Badge bg="info">{Language[activeJob.language]}</Badge>
-                </CardSubtitle>
-            </CardHeader>
-            <CardBody>
-                {
-                    activeJob.status == 4 ?
-                        <>
-                            <ProgressBar variant="primary" now={100} key={1}/>
-                            <p className="progress-label">{activeJob.progress}/{activeJob.totalTasks}</p>
-                            <ListGroup style={{marginTop: '20px'}}>
-                                <ListGroupItem>
-                                    Run Time:&emsp;&emsp;&emsp;
-                                    {activeJob.runTimeMS / 60000} min
-                                </ListGroupItem>
-                                <ListGroupItem>
-                                    Run Time:&emsp;&emsp;&emsp;
-                                    {activeJob.runTimeMS / 1000} s
-                                </ListGroupItem>
-                                <ListGroupItem>
-                                    Run Time:&emsp;&emsp;&emsp;
-                                    {activeJob.runTimeMS} ms
-                                </ListGroupItem>
-                            </ListGroup>
-                        </>
-                        :
-                        <>
-                            <ListGroup style={{marginTop: '20px'}}>
-                                <ListGroupItem>
-                                    Jobs Done:&emsp;&emsp;&emsp;
-                                    {activeJob.progress + jobsDone}
-                                </ListGroupItem>
-                                <ListGroupItem>
-                                    Jobs Running:&emsp;&emsp;&emsp;
-                                    {jobsRunning}
-                                </ListGroupItem>
-                            </ListGroup>
-                            <br></br>
-                            <ProgressBar>
-                                <ProgressBar striped variant="success"
-                                             min={0}
-                                             max={activeJob.totalTasks}
-                                             now={activeJob.progress + jobsDone}
-                                             key={1}/>
-                                <ProgressBar animated variant="info"
-                                             min={0}
-                                             max={activeJob.totalTasks}
-                                             now={jobsRunning} key={2}/>
-                            </ProgressBar>
-                            <p className="progress-label">{activeJob.progress + jobsDone}/{activeJob.totalTasks}</p>
-                        </>
-                }
-                <div className="button-container">
-                    <div className="button-float-left">
-                        <Button variant="success" onClick={startjob} disabled={activeJob.status == 4 || activeJob.status == 2}>Start</Button>
-                        <Button className="button-float-left-stop" variant="danger" onClick={stoptjob} disabled={activeJob.status == 4 || activeJob.status == 3}>Stop</Button>
+        <>
+            <ToastContainer className="p-5" position={"top-center"}>
+                <Toast autohide delay={5000} show={showToast} onClose={hideToast}>
+                    <ToastHeader>
+                        <strong className="me-auto">Job Information</strong>
+                        <Badge bg='success'>Information</Badge>
+                    </ToastHeader>
+                    <ToastBody>{toastText}</ToastBody>
+                </Toast>
+            </ToastContainer>
+            <Card style={{marginBottom: "20px"}}>
+                <CardHeader>
+                    <CardTitle>{activeJob.name}</CardTitle>
+                    <CardSubtitle>
+                        {Status[activeJob.status]}
+                        &emsp;
+                        <Badge bg="info">{Language[activeJob.language]}</Badge>
+                    </CardSubtitle>
+                </CardHeader>
+                <CardBody>
+                    {
+                        activeJob.status == 4 ?
+                            <>
+                                <ProgressBar variant="primary" now={100} key={1}/>
+                                <p className="progress-label">{activeJob.progress}/{activeJob.totalTasks}</p>
+                                <ListGroup style={{marginTop: '20px'}}>
+                                    <ListGroupItem>
+                                        Run Time:&emsp;&emsp;&emsp;
+                                        {activeJob.runTimeMS / 60000} min
+                                    </ListGroupItem>
+                                    <ListGroupItem>
+                                        Run Time:&emsp;&emsp;&emsp;
+                                        {activeJob.runTimeMS / 1000} s
+                                    </ListGroupItem>
+                                    <ListGroupItem>
+                                        Run Time:&emsp;&emsp;&emsp;
+                                        {activeJob.runTimeMS} ms
+                                    </ListGroupItem>
+                                </ListGroup>
+                            </>
+                            :
+                            <>
+                                <ListGroup style={{marginTop: '20px'}}>
+                                    <ListGroupItem>
+                                        Jobs Done:&emsp;&emsp;&emsp;
+                                        {activeJob.progress + jobsDone}
+                                    </ListGroupItem>
+                                    <ListGroupItem>
+                                        Jobs Running:&emsp;&emsp;&emsp;
+                                        {jobsRunning}
+                                    </ListGroupItem>
+                                </ListGroup>
+                                <br></br>
+                                <ProgressBar>
+                                    <ProgressBar striped variant="success"
+                                                 min={0}
+                                                 max={activeJob.totalTasks}
+                                                 now={activeJob.progress + jobsDone}
+                                                 key={1}/>
+                                    <ProgressBar animated variant="info"
+                                                 min={0}
+                                                 max={activeJob.totalTasks}
+                                                 now={jobsRunning} key={2}/>
+                                </ProgressBar>
+                                <p className="progress-label">{activeJob.progress + jobsDone}/{activeJob.totalTasks}</p>
+                            </>
+                    }
+                    <div className="button-container">
+                        <div className="button-float-left">
+                            <Button variant="success" onClick={startjob} disabled={activeJob.status == 4 || activeJob.status == 2}>Start</Button>
+                            <Button className="button-float-left-stop" variant="danger" onClick={stoptjob} disabled={activeJob.status == 4 || activeJob.status == 3}>Stop</Button>
+                        </div>
+                        <Button variant="warning" onClick={resetJob} className="button-float-right" disabled={activeJob.status == 2}>Reset</Button>
                     </div>
-                    <Button variant="warning" onClick={resetJob} className="button-float-right" disabled={activeJob.status == 2}>Reset</Button>
-                </div>
-                <br></br>
-                <CardText>
-                    Some description about this awesome task and whats its purpose! Lorem ipsum etc..
-                </CardText>
-                <h2>Results:</h2>
-                <textarea
-                    cols={30}
-                    rows={10}
-                    value={jobResults}
-                    readOnly={true}
-                    style={{marginTop: 15, width: "50%"}}
-                ></textarea>
-            </CardBody>
-        </Card>
+                    <br></br>
+                    <CardText>
+                        Some description about this awesome task and whats its purpose! Lorem ipsum etc..
+                    </CardText>
+                    <h2>Results:</h2>
+                    <textarea
+                        cols={30}
+                        rows={10}
+                        value={jobResults}
+                        readOnly={true}
+                        style={{marginTop: 15, width: "50%"}}
+                    ></textarea>
+                </CardBody>
+            </Card>
+        </>
     )
 }

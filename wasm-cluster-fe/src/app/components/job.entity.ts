@@ -4,8 +4,7 @@ export enum Status {
     ACTIVE,
     RUNNING,
     STOPPED,
-    DONE,
-    NOT_FOUND
+    DONE
 }
 
 /* Job.Language from Backend */

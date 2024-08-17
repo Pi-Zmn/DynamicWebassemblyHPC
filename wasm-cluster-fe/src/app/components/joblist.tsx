@@ -21,7 +21,7 @@ export default function Joblist({ jobs }: JobListProps) {
     const acvtivate = async (id: number) => {
         const res = await fetch(backendURL + '/job/activate/' + id)
         if (res.ok) {
-            // TODO: Spawn toast -Job#ID activated
+            // TODO Scroll up to top of screen
         }
     }
 

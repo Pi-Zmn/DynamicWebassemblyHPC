@@ -12,7 +12,7 @@ export default function Client() {
     const noJob: Job = {
         id: 0,
         name: 'No Active Job',
-        status: 5,
+        status: 0,
         progress: 0,
         totalTasks: 0,
         taskBatchSize: 0,
@@ -75,6 +75,23 @@ export default function Client() {
                 setIsComputing(true)
             } else {
                 console.log('Can Not Run Task')
+            }
+        })
+
+        newSocket.on('no-task', (job: Job) => {
+            console.log(`No Available Tasks for Job: #${job.id}`)
+            /* Check if Job is DONE*/
+            if (Status[job.status] === 'DONE') {
+                // TODO: Display Job Done
+                console.log(`Job #${job.id} is DONE`)
+            } else {
+                /* Request new Task after Job-Timeout (+ random sec between 1 - 10) */
+                const delayInMS = (job.taskTimeOut + Math.floor(Math.random() * 10) + 1) * 1000
+                console.log(`Waiting for ${delayInMS}ms`)
+                setInterval(() => {
+                    console.log(`Requesting new Task for Job: #${job.id}`)
+                    newSocket.emit('request-task')
+                }, delayInMS)
             }
         })
     }
@@ -203,8 +220,10 @@ export default function Client() {
                     </ListGroupItem>
                     <ListGroupItem>
                         Supported Project:&emsp;&emsp;&emsp;
-                        {activeJob.name}:&emsp;&emsp;&emsp;
-                        {Status[activeJob.status]}
+                        {activeJob.name}
+                        {/* TODO: Get current Status of Job (Do not use 'setActiveJob', because useEffect dependency)
+                        :&emsp;&emsp;&emsp;
+                        {Status[activeJob.status]}*/}
                     </ListGroupItem>
                     <ListGroupItem>
                         Wasm Worker:&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;
