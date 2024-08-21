@@ -181,7 +181,7 @@ export default function Client() {
     }, [activeJob]);
 
     return (
-        <Card className="client-container">
+        <Card className="slim-container">
             <CardBody>
                 <CardTitle>DOINC Worker</CardTitle>
                 <CardSubtitle>Your Device is part of the DOINC cluster and will be used for crowd computing.</CardSubtitle>

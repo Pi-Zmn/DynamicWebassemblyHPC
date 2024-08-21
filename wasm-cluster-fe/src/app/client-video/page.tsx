@@ -12,7 +12,7 @@ export default function ClientVideo() {
     const noJob: Job = {
         id: 0,
         name: 'No Active Job',
-        status: 5,
+        status: 0,
         progress: 0,
         totalTasks: 0,
         taskBatchSize: 0,

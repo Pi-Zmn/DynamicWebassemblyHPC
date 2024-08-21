@@ -37,14 +37,14 @@
     }
 }
 
-/* Client Page */
-.client-container {
+/* Client Page & Distribute Page */
+.slim-container {
     width: 50%;
     margin-left: 25%;
 }
 
 @media only screen and (max-width: 768px) {
-    .client-container {
+    .slim-container {
         width: 100%;
         margin-left: 0;
     }
