@@ -201,7 +201,7 @@ export class JobService {
         await this.start()
       } else {  
         /* Job is DONE */
-        this.activeJob.status = 4
+        this.activeJob.status = Status.DONE
         this.activeJob.endTime = new Date()
         this.activeJob.runTimeMS = this.activeJob.endTime.getTime() - this.activeJob.startTime.getTime()
         this.update(this.activeJob.id, new JobDto(this.activeJob))
@@ -226,9 +226,9 @@ export class JobService {
         this.activeJob = job;
         /* Check if Job is Already done */
         if (this.activeJob.progress != 0 && this.activeJob.progress >= this.activeJob.totalTasks) {
-          this.activeJob.status = 4;
+          this.activeJob.status = Status.DONE;
         } else {
-          this.activeJob.status = 1; 
+          this.activeJob.status = Status.ACTIVE; 
           this.activeJob.tasks = await this.generateTasks(job);
           if (job.totalTasks == 0) {
             this.activeJob.totalTasks = await this.getNumOfTotalTasks(job.name)
@@ -248,7 +248,7 @@ export class JobService {
       if (this.activeJob && this.activeJob.tasks.length == 0) {
         this.activeJob.tasks = await this.generateTasks(this.activeJob);
       }
-      this.activeJob.status = 2
+      this.activeJob.status = Status.RUNNING
       if (this.activeJob && !this.activeJob.startTime) {
         this.activeJob.startTime = new Date()
       }
@@ -262,7 +262,7 @@ export class JobService {
   stop(): boolean {
     if (this.activeJob) {
       Logger.log(`stopped Job: ${this.activeJob.name}`)
-      this.activeJob.status = 3
+      this.activeJob.status = Status.STOPPED
       this.publishActiveJobUpdate() 
       return true
     }
@@ -272,7 +272,7 @@ export class JobService {
   reset(): boolean {
     if (this.activeJob) {
       Logger.log(`reset Job: ${this.activeJob.name}`)
-      this.activeJob.status = 3
+      this.activeJob.status = Status.STOPPED
       this.activeJob.progress = 0
       this.activeJob.tasks = []
       this.activeJob.startTime = null

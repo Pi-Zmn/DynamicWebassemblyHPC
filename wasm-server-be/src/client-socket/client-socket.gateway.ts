@@ -7,6 +7,7 @@ import { Task } from 'src/job/entities/task.entity';
 import { JobService } from 'src/job/job.service';
 import { OnEvent } from '@nestjs/event-emitter';
 import { JobDto } from 'src/job/dto/job.dto';
+import { Status } from 'src/job/entities/job.entity';
 
 @WebSocketGateway({
   cors: {
@@ -71,7 +72,7 @@ export class ClientSocketGateway implements OnGatewayConnection, OnGatewayDiscon
 
   /* Emit Next Task to Worker if activeJob up and RUNNING */
   sendTaskToWorker(id: string) {
-    if (this.jobService.activeJob && this.jobService.activeJob.status == 2) {
+    if (this.jobService.activeJob && this.jobService.activeJob.status == Status.RUNNING) {
       const nextTask: Task = this.jobService.getNextTasks()
       if (nextTask) {
         this.server.to(id).emit(

@@ -12,7 +12,7 @@ export default function Client() {
     const noJob: Job = {
         id: 0,
         name: 'No Active Job',
-        status: 0,
+        status: Status.PENDING,
         progress: 0,
         totalTasks: 0,
         taskBatchSize: 0,

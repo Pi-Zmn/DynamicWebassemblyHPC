@@ -1,16 +1,20 @@
-import {ActiveJob, Task, Language, Status} from "@/app/components/job.entity";
+import {ActiveJob, Language, Status, Task} from "@/app/components/job.entity";
 import {
     Badge,
     Button,
     Card,
     CardBody,
     CardHeader,
-    CardSubtitle, CardText,
-    CardTitle, ListGroup, ListGroupItem,
+    CardSubtitle,
+    CardText,
+    CardTitle,
+    ListGroup,
+    ListGroupItem,
     ProgressBar,
-    ToastContainer,
     Toast,
-    ToastHeader, ToastBody
+    ToastBody,
+    ToastContainer,
+    ToastHeader
 } from "react-bootstrap";
 import {useEffect, useState} from "react";
 
@@ -96,7 +100,7 @@ export default function Activejob({ activeJob, jobResults }: ActiveJobProps) {
                 </CardHeader>
                 <CardBody>
                     {
-                        activeJob.status == 4 ?
+                        activeJob.status == Status.DONE ?
                             <>
                                 <ProgressBar variant="primary" now={100} key={1}/>
                                 <p className="progress-label">{activeJob.progress}/{activeJob.totalTasks}</p>
@@ -144,10 +148,19 @@ export default function Activejob({ activeJob, jobResults }: ActiveJobProps) {
                     }
                     <div className="button-container">
                         <div className="button-float-left">
-                            <Button variant="success" onClick={startjob} disabled={activeJob.status == 4 || activeJob.status == 2}>Start</Button>
-                            <Button className="button-float-left-stop" variant="danger" onClick={stoptjob} disabled={activeJob.status == 4 || activeJob.status == 3}>Stop</Button>
+                            <Button variant="success" onClick={startjob}
+                                    disabled={activeJob.status == Status.DONE || activeJob.status == Status.RUNNING}>
+                                Start
+                            </Button>
+                            <Button className="button-float-left-stop" variant="danger" onClick={stoptjob}
+                                    disabled={activeJob.status == Status.DONE || activeJob.status == Status.STOPPED}>
+                                Stop
+                            </Button>
                         </div>
-                        <Button variant="warning" onClick={resetJob} className="button-float-right" disabled={activeJob.status == 2}>Reset</Button>
+                        <Button variant="warning" onClick={resetJob} className="button-float-right"
+                                disabled={activeJob.status == Status.RUNNING}>
+                            Reset
+                        </Button>
                     </div>
                     <br></br>
                     <CardText>

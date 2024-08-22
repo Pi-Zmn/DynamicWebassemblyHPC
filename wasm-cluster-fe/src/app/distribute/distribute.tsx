@@ -1,18 +1,26 @@
 'use client'
 
 import {
-    Card, CardBody, CardSubtitle, CardTitle,
-    Form, FormGroup, FormLabel, FormControl, FormText,
-    Button, FormSelect
+    Button,
+    Card,
+    CardBody,
+    CardSubtitle,
+    CardTitle,
+    Form,
+    FormControl,
+    FormGroup,
+    FormLabel,
+    FormSelect,
+    FormText
 } from "react-bootstrap";
-import {Job, Language} from "@/app/components/job.entity";
+import {Job, Language, Status} from "@/app/components/job.entity";
 import {useState} from "react";
 
 export default function Distribute() {
     const newJob: Job = {
         id: 0,
         name: '',
-        status: 0,
+        status: Status.PENDING,
         progress: 0,
         totalTasks: 0,
         taskBatchSize: 0,

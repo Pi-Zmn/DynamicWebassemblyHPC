@@ -37,7 +37,7 @@ export default function Joblist({ jobs }: JobListProps) {
                     <Card key={job.id} className='list-item'>
                         <CardTitle>{job.name}</CardTitle>
                         <CardSubtitle className="mb-2 text-muted">
-                            {job.status == 4 ? <Badge bg="success">{Status[job.status]}</Badge> : ""}
+                            {job.status == Status.DONE ? <Badge bg="success">{Status[job.status]}</Badge> : ""}
                             &emsp;
                             <Badge bg="info">{Language[job.language]}</Badge>
                         </CardSubtitle>

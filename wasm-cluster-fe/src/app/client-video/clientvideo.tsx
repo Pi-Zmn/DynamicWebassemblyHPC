@@ -3,7 +3,7 @@
 import {useEffect, useRef, useState} from "react";
 import {YouTubeEmbed} from '@next/third-parties/google'
 import {Card, CardBody} from "react-bootstrap";
-import {Job, Task} from "@/app/components/job.entity";
+import {Job, Status, Task} from "@/app/components/job.entity";
 import {IResult, UAParser} from "ua-parser-js";
 import {io} from "socket.io-client";
 
@@ -12,7 +12,7 @@ export default function ClientVideo() {
     const noJob: Job = {
         id: 0,
         name: 'No Active Job',
-        status: 0,
+        status: Status.PENDING,
         progress: 0,
         totalTasks: 0,
         taskBatchSize: 0,
