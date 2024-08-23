@@ -12,6 +12,31 @@ services:
       - '5432:5432'
     volumes:
       - postgres_data:/var/lib/postgresql/data
+      
+  nest-backend:
+    container_name: backend-MA
+    depends_on:
+      - postgres
+    build: 
+      context: ./wasm-server-be/
+      dockerfile: Dockerfile
+    environment:
+      - POSTGRES_HOST=postgres
+    ports:
+      - "3000:3000"
+      - "3001:3001"
+      
+  next-frontend:
+    container_name: frontend-MA
+    depends_on:
+      - nest-backend
+    build: 
+      context: ./wasm-cluster-fe/
+      dockerfile: Dockerfile
+    environment:
+      - NEXT_PUBLIC_BACKEND='192.168.2.204'
+    ports:
+      - "4000:4000"
 
 volumes:
   postgres_data:

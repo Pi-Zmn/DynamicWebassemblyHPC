@@ -14,7 +14,7 @@ import { join } from 'path';
   imports: [JobModule, ClientSocketModule, DashboardSocketModule,
     TypeOrmModule.forRoot({
       type: 'postgres',
-      host: 'localhost',
+      host: process.env.POSTGRES_HOST || 'localhost',
       port: 5432,
       username: 'myuser',
       password: 'secret',
