@@ -1,8 +1,9 @@
 'use server'
 
-import {getSession, UserRole} from "@/app/components/auth";
+import {getSession} from "@/app/components/auth";
 import {redirect} from "next/navigation";
 import React from "react";
+import {UserRole} from "@/app/components/entities/user.entity";
 
 /* Component Checks for Session and User Role or Redirects to Login Page */
 export default async function AdminPage(props: any) {

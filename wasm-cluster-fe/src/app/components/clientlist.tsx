@@ -1,5 +1,5 @@
 import {Badge, Card, CardBody, CardHeader, CardSubtitle, CardTitle, ListGroup, ListGroupItem} from "react-bootstrap";
-import {Client} from "@/app/components/client.entity";
+import {Client} from "@/app/components/entities/client.entity";
 
 type ClientListProps = {
     clients: Client[];

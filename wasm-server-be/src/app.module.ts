@@ -9,9 +9,11 @@ import { DashboardSocketModule } from './dashboard-socket/dashboard-socket.modul
 import { EventEmitterModule } from '@nestjs/event-emitter';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
+import { UserModule } from './user/user.module';
+import { User } from './user/entities/user.entity';
 
 @Module({
-  imports: [JobModule, ClientSocketModule, DashboardSocketModule,
+  imports: [JobModule, ClientSocketModule, DashboardSocketModule, UserModule,
     TypeOrmModule.forRoot({
       type: 'postgres',
       host: process.env.POSTGRES_HOST || 'localhost',
@@ -19,7 +21,7 @@ import { join } from 'path';
       username: 'myuser',
       password: 'secret',
       database: 'mydatabase',
-      entities: [Job],
+      entities: [Job, User],
       synchronize: true,
     }),
     EventEmitterModule.forRoot(),

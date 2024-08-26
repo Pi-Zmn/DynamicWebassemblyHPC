@@ -1,4 +1,4 @@
-import {Job, Language, Status} from "@/app/components/job.entity";
+import {Job, Language, Status} from "@/app/components/entities/job.entity";
 import {
     Badge,
     Button,

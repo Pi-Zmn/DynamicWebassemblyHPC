@@ -3,7 +3,7 @@
 import {useEffect, useRef, useState} from "react";
 import {YouTubeEmbed} from '@next/third-parties/google'
 import {Card, CardBody} from "react-bootstrap";
-import {Job, Status, Task} from "@/app/components/job.entity";
+import {Job, Status, Task} from "@/app/components/entities/job.entity";
 import {IResult, UAParser} from "ua-parser-js";
 import {io} from "socket.io-client";
 

@@ -1,23 +1,20 @@
-import { MessageBody } from '@nestjs/websockets';
-import { Controller, Get, Post, Body, Param, Delete, Put, NotFoundException, Res, ForbiddenException, InternalServerErrorException } from '@nestjs/common';
-import { FastifyReply } from 'fastify';
+import { Controller, Get, Post, Body, Param, Delete, Put, NotFoundException, Res, ForbiddenException, InternalServerErrorException, UseGuards } from '@nestjs/common';
 import { JobService } from './job.service';
 import { JobDto } from './dto/job.dto';
 import { Job } from './entities/job.entity';
-import { join } from 'path';
-import { readFileSync } from 'fs';
+import { AdminGuard } from 'src/auth-guard/admin.guard';
 
 @Controller('job')
 export class JobController {
   constructor(private readonly jobService: JobService) {}
 
-  //TODO Validation
-
+  @UseGuards(AdminGuard)
   @Post()
   create(@Body() jobDto: JobDto): Promise<Job> {
     return this.jobService.create(jobDto); 
   }
 
+  @UseGuards(AdminGuard)
   @Get()
   findAll(): Promise<JobDto[] | void> {
     return this.jobService.findAll().then((jobs) => {
@@ -25,6 +22,7 @@ export class JobController {
     });
   }
 
+  @UseGuards(AdminGuard)
   @Get(':id')
   findOne(@Param('id') id: string): Promise<JobDto> {
     return this.jobService.findOne(+id).then((job) => {
@@ -35,6 +33,7 @@ export class JobController {
     });
   }
 
+  @UseGuards(AdminGuard)
   @Get('active')
   getActiveJob(): JobDto {
     if (this.jobService.activeJob) {
@@ -43,6 +42,7 @@ export class JobController {
     throw new NotFoundException();
   }
 
+  @UseGuards(AdminGuard)
   @Put(':id')
   update(@Param('id') id: string, @Body() jobDto: JobDto): Promise<JobDto> {
     return this.jobService.update(+id, jobDto).then((job) => {
@@ -53,6 +53,7 @@ export class JobController {
     });
   }
 
+  @UseGuards(AdminGuard)
   @Delete(':id')
   remove(@Param('id') id: string) {
     this.jobService.remove(+id);
@@ -60,6 +61,7 @@ export class JobController {
   }
 
   /* Returns Started Job DTO or throws exception */
+  @UseGuards(AdminGuard)
   @Get('activate/:id')
   async activateJob(@Param('id') id: number) {
     /* TODO: Check for running job instead (global running boolean?)
@@ -76,6 +78,7 @@ export class JobController {
     return new JobDto(jobToActivate)
   }
 
+  @UseGuards(AdminGuard)
   @Get('start')
   async startJob() {
     if(await this.jobService.start()) {
@@ -84,6 +87,7 @@ export class JobController {
     throw new ForbiddenException(`Can not Start Job`) 
   }
 
+  @UseGuards(AdminGuard)
   @Get('stop')
   stopJob() {
     if(this.jobService.stop()) {
@@ -92,6 +96,7 @@ export class JobController {
     throw new ForbiddenException(`Can not Stop Job`)
   }
 
+  @UseGuards(AdminGuard)
   @Get('reset')
   resetJob(@Param('id') id: number) {
     if(this.jobService.reset()) {

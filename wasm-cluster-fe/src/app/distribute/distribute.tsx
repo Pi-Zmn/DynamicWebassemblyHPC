@@ -13,7 +13,7 @@ import {
     FormSelect,
     FormText
 } from "react-bootstrap";
-import {Job, Language, Status} from "@/app/components/job.entity";
+import {Job, Language, Status} from "@/app/components/entities/job.entity";
 import {useState} from "react";
 
 export default function Distribute() {

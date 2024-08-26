@@ -1,4 +1,4 @@
-import {ActiveJob, Language, Status, Task} from "@/app/components/job.entity";
+import {ActiveJob, Language, Status, Task} from "@/app/components/entities/job.entity";
 import {
     Badge,
     Button,

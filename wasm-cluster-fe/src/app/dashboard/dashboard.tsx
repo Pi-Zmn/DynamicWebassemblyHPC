@@ -1,9 +1,9 @@
 'use client'
 
-import {ActiveJob, Job} from "@/app/components/job.entity";
-import {Card, CardBody, CardHeader, CardSubtitle, CardTitle} from "react-bootstrap";
+import {ActiveJob, Job} from "@/app/components/entities/job.entity";
+import {Card, CardBody, CardSubtitle, CardTitle} from "react-bootstrap";
 import Clientlist from "@/app/components/clientlist";
-import {Client} from "@/app/components/client.entity";
+import {Client} from "@/app/components/entities/client.entity";
 import {useEffect, useState} from "react";
 import {io} from "socket.io-client";
 import Activejob from "@/app/components/activejob";

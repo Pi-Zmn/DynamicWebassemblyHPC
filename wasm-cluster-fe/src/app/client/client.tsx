@@ -4,7 +4,7 @@ import {Card, CardBody, CardSubtitle, CardTitle, Button, ListGroup, ListGroupIte
 import {useEffect, useRef, useState} from "react";
 import {io} from "socket.io-client";
 import {IResult, UAParser} from 'ua-parser-js';
-import {Job, Status, Task} from "@/app/components/job.entity";
+import {Job, Status, Task} from "@/app/components/entities/job.entity";
 import Image from "next/image";
 
 export default function Client() {

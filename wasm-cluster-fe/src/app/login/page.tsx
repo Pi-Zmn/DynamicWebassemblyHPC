@@ -5,8 +5,8 @@ export default function LogIn() {
     return (
         <Card className="slim-container">
             <CardBody>
-                <CardTitle>Distribute a Job To DOINC</CardTitle>
-                <CardSubtitle>Define all Attributes of the Job</CardSubtitle>
+                <CardTitle>Darmstadt Open Infrastructure for Network Computing</CardTitle>
+                <CardSubtitle>Login</CardSubtitle>
                 <CardBody>
                     <AuthForm />
                 </CardBody>

@@ -1,63 +1,59 @@
 import 'server-only'
-import {jwtVerify, SignJWT} from "jose";
+import {jwtVerify} from "jose";
 import {cookies} from "next/headers";
-
+import {User, UserRole} from "@/app/components/entities/user.entity";
 
 const secretKey = process.env.SECRET_KEY
 const encodedKey = new TextEncoder().encode(secretKey)
-const userCredentials: string = 'AdminUser-Masterarbeit-FBI-Hda'
-
-export enum UserRole {
-    User,
-    Admin
-}
-
-export interface User {
-    name: string,
-    role: UserRole
-}
-
-export interface SessionPayload {
-    user: User,
-    expires: Date
-}
+const backendURL: string = 'http://' + process.env.NEXT_PUBLIC_BACKEND + ':' + process.env.NEXT_PUBLIC_WS_WORKER;
 
 export async function validateUser(formData: FormData) {
-    /* Verify User Credentials */
+    /* Get User Credentials from Form */
     const name = formData.get('name')
     const password = formData.get('password')
 
-    if (name === password && name === userCredentials) {
-        /* Create User Object */
-        const user: User = { name: 'AdminUser', role: UserRole.Admin }
+    /* Send User Credentials to Login-Endpoint */
+    const res = await fetch(backendURL + '/user/login',
+        {
+            method: 'POST',
+            headers: {'Content-Type':'application/json'},
+            body: JSON.stringify({
+                name,
+                password
+            })
+        })
+    if (res.ok) {
+        /* Parse JWT from Login */
+        const jwt = (await res.json()).access_token
 
-        /* Create Session Object */
-        const expires = new Date(Date.now() + 2 * 24 * 60 * 60 * 1000); // now + 2 days
-        const sessionPayload: SessionPayload = { user, expires }
-        const session = await encrypt(sessionPayload)
+        console.log(await jwtVerify(jwt, encodedKey, {
+            algorithms: ['HS256'],
+        }))
 
         /* Save Sesssion in a Cookie */
-        cookies().set('session', session, { expires, httpOnly: true })
+        const expires = new Date(Date.now() + 2 * 24 * 60 * 60 * 1000); // now + 2 days
+        cookies().set('session', jwt, { expires, httpOnly: true })
         return true;
-    } else {
-        return false;
     }
+
+    return false
 }
 
-export async function encrypt(payload: any) {
+/* Not needed since JWT is created in Backend */
+/*export async function encrypt(payload: any) {
     return new SignJWT(payload)
         .setProtectedHeader({ alg: 'HS256' })
         .setIssuedAt()
         .setExpirationTime('2d')
         .sign(encodedKey)
-}
+}*/
 
 export async function decrypt(session: string | undefined = '') {
     try {
         const { payload } = await jwtVerify(session, encodedKey, {
             algorithms: ['HS256'],
         })
-        return payload as unknown as SessionPayload
+        return payload as unknown as User
     } catch (error) {
         console.log('Failed to verify session')
     }
