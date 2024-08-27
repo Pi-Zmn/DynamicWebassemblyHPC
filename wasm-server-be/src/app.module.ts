@@ -11,6 +11,7 @@ import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 import { UserModule } from './user/user.module';
 import { User } from './user/entities/user.entity';
+import { DatabaseSeedService } from './database-seed.service';
 
 @Module({
   imports: [JobModule, ClientSocketModule, DashboardSocketModule, UserModule,
@@ -24,6 +25,8 @@ import { User } from './user/entities/user.entity';
       entities: [Job, User],
       synchronize: true,
     }),
+    TypeOrmModule.forFeature([User]),
+    TypeOrmModule.forFeature([Job]),
     EventEmitterModule.forRoot(),
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '..', 'wasm'),
@@ -31,6 +34,14 @@ import { User } from './user/entities/user.entity';
     }),
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, DatabaseSeedService],
 })
-export class AppModule {}
+export class AppModule {
+  constructor(
+    private readonly databaseSeedService: DatabaseSeedService
+  ) {}
+
+  async onModuleInit() {
+    await this.databaseSeedService.createSeed()
+  }
+}
