@@ -21,7 +21,7 @@ export default function Dashboard({jwt, user}: AuthProps) {
     let socket: any = null
 
     const connectSocket = () => {
-        const newSocket = io(backendURLSocket)
+        const newSocket = io(backendURLSocket, {auth: {token: jwt}})
         newSocket.on("connect", () => {
             if (socket != null) {
                 socket.disconnect()
@@ -29,6 +29,10 @@ export default function Dashboard({jwt, user}: AuthProps) {
             }
             socket = newSocket
             console.log("Socket connected")
+        })
+
+        newSocket.on('disconnect', () => {
+            console.log("Socket connection disconnected")
         })
 
         newSocket.on('client-update', (data: Client[]) => {

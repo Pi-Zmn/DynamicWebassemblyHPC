@@ -1,19 +1,21 @@
 import { ConnectedSocket, MessageBody, OnGatewayConnection, OnGatewayDisconnect, SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
 import { ClientSocketService } from './client-socket.service';
 import { Server, Socket } from 'socket.io';
-import { Logger } from '@nestjs/common';
+import { Logger, UseGuards } from '@nestjs/common';
 import { ClientInfo, WorkerClient } from './entity/workerclient.entity';
 import { Task } from 'src/job/entities/task.entity';
 import { JobService } from 'src/job/job.service';
 import { OnEvent } from '@nestjs/event-emitter';
 import { JobDto } from 'src/job/dto/job.dto';
 import { Status } from 'src/job/entities/job.entity';
+import { GatewayUserGuard } from 'src/auth-guard/gateway-user.guard';
 
 @WebSocketGateway({
   cors: {
     origin: '*'
   }
 })
+@UseGuards(GatewayUserGuard)
 export class ClientSocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
   constructor(
     private readonly clientSocketService: ClientSocketService,

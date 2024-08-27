@@ -39,7 +39,7 @@ export default function ClientVideo({jwt, user}: AuthProps) {
 
     /* Connect as Worker to Backend Socket */
     const connectSocket = () => {
-        const newSocket = io(backendURL)
+        const newSocket = io(backendURL, {auth: {token: jwt}})
         newSocket.on("connect", () => {
             if (socket != null) {
                 socket.disconnect()
@@ -48,6 +48,10 @@ export default function ClientVideo({jwt, user}: AuthProps) {
             setSocket(newSocket)
             console.log("Socket connected")
             newSocket.emit("client-info", UAParser())
+        })
+
+        newSocket.on('disconnect', () => {
+            console.log("Socket connection disconnected")
         })
 
         newSocket.on('job-activated', (job: Job) => {

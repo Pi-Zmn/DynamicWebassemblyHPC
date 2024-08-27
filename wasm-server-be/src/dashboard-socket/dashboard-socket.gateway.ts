@@ -4,15 +4,17 @@ import { ConnectedSocket, MessageBody, OnGatewayConnection, OnGatewayDisconnect,
 import { DashboardSocketService } from './dashboard-socket.service';
 import { JobService } from 'src/job/job.service';
 import { Server, Socket } from 'socket.io';
-import { Logger } from '@nestjs/common';
+import { Logger, UseGuards } from '@nestjs/common';
 import { OnEvent } from '@nestjs/event-emitter';
 import { Job } from 'src/job/entities/job.entity';
+import { GatewayAdminGuard } from 'src/auth-guard/gateway-admin.guard';
 
 @WebSocketGateway(3001, {
   cors: {
     origin: '*'
   }
 })
+@UseGuards(GatewayAdminGuard)
 export class DashboardSocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
   constructor(
     private readonly dashboardSocketService: DashboardSocketService,

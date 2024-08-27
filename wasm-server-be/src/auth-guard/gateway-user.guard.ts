@@ -3,15 +3,17 @@ import { JwtService } from "@nestjs/jwt";
 import { UserRole } from "src/user/entities/user.entity";
 
 @Injectable()
-export class UserGuard implements CanActivate {
+export class GatewayUserGuard implements CanActivate {
     constructor(
         private jwtService: JwtService
     ) {}
 
     async canActivate(context: ExecutionContext): Promise<boolean> {
-        const [type, jwt] = context.switchToHttp().getRequest().headers.authorization?.split(' ') ?? []
-        
-        if (!jwt || type !== 'Bearer') {
+        const client = context.switchToWs().getClient()
+        const jwt = client.handshake?.auth?.token
+
+        if (!jwt) {
+            client.disconnect()
             throw new UnauthorizedException()
         }
 
@@ -23,9 +25,11 @@ export class UserGuard implements CanActivate {
                 }
             )
             if (user.role !== UserRole.User && user.role !== UserRole.Admin) {
+                client.disconnect()
                 throw new UnauthorizedException()
             }
         } catch (e) {
+            client.disconnect()
             throw new UnauthorizedException()
         }
         return true;

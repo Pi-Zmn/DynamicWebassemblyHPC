@@ -46,7 +46,7 @@ export default function Client({jwt, user}: AuthProps) {
 
     /* Connect as Worker to Backend Socket */
     const connectSocket = () => {
-        const newSocket = io(backendURL)
+        const newSocket = io(backendURL, {auth: {token: jwt}})
         newSocket.on("connect", () => {
             if (socket != null) {
                 socket.disconnect()
@@ -56,6 +56,11 @@ export default function Client({jwt, user}: AuthProps) {
             setIsConnected(true)
             console.log("Socket connected")
             newSocket.emit("client-info", UAParser())
+        })
+
+        newSocket.on('disconnect', () => {
+            console.log("Socket connection disconnected")
+            setIsConnected(false)
         })
 
         newSocket.on('job-activated', (job: Job) => {

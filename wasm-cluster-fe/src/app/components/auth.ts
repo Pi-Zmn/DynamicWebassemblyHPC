@@ -32,10 +32,6 @@ export async function validateUser(formData: FormData) {
         /* Parse JWT from Login */
         const jwt = (await res.json()).access_token
 
-        console.log(await jwtVerify(jwt, encodedKey, {
-            algorithms: ['HS256'],
-        }))
-
         /* Save Sesssion in a Cookie */
         const expires = new Date(Date.now() + 2 * 24 * 60 * 60 * 1000); // now + 2 days
         cookies().set('session', jwt, { expires, httpOnly: true })
