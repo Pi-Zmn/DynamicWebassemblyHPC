@@ -6,8 +6,9 @@ import {io} from "socket.io-client";
 import {IResult, UAParser} from 'ua-parser-js';
 import {Job, Status, Task} from "@/app/components/entities/job.entity";
 import Image from "next/image";
+import {AuthProps} from "@/app/components/auth";
 
-export default function Client() {
+export default function Client({jwt, user}: AuthProps) {
     /* Default Job if no Active Job */
     const noJob: Job = {
         id: 0,

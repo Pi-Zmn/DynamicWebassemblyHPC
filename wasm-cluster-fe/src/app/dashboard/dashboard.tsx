@@ -8,8 +8,9 @@ import {useEffect, useState} from "react";
 import {io} from "socket.io-client";
 import Activejob from "@/app/components/activejob";
 import Joblist from "@/app/components/joblist";
+import {AuthProps} from "@/app/components/auth";
 
-export default function Dashboard() {
+export default function Dashboard({jwt, user}: AuthProps) {
     const [activeJob, setActiveJob ] = useState<ActiveJob | undefined>();
     const [jobs, setJobs ] = useState<Job[]>([]);
     const [clients, setClients] = useState<Client[]>([])
@@ -68,8 +69,8 @@ export default function Dashboard() {
                 <CardSubtitle>Overview of available Jobs and Connected Workers</CardSubtitle>
                 <CardBody className="flex-container">
                     <div className="list-container-big">
-                        {activeJob ? <Activejob activeJob={activeJob} jobResults={result}/> : <></>}
-                        <Joblist jobs={jobs}/>
+                        {activeJob ? <Activejob activeJob={activeJob} jobResults={result} jwt={jwt} /> : <></>}
+                        <Joblist jobs={jobs} jwt={jwt} />
                     </div>
                     <Clientlist clients={clients}/>
                 </CardBody>

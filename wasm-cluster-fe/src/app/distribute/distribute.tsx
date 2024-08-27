@@ -15,8 +15,9 @@ import {
 } from "react-bootstrap";
 import {Job, Language, Status} from "@/app/components/entities/job.entity";
 import {useState} from "react";
+import {AuthProps} from "@/app/components/auth";
 
-export default function Distribute() {
+export default function Distribute({jwt, user}: AuthProps) {
     const newJob: Job = {
         id: 0,
         name: '',

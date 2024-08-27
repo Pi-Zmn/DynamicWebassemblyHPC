@@ -13,15 +13,16 @@ import {
 
 type JobListProps = {
     jobs: Job[];
+    jwt: string;
 }
 
-export default function Joblist({ jobs }: JobListProps) {
+export default function Joblist({ jobs, jwt }: JobListProps) {
     const backendURL: string = 'http://' + process.env.NEXT_PUBLIC_BACKEND + ':' + process.env.NEXT_PUBLIC_WS_WORKER;
 
     const acvtivate = async (id: number) => {
-        const res = await fetch(backendURL + '/job/activate/' + id)
+        const res = await fetch(backendURL + '/job/activate/' + id, {headers: {'Authorization': `Bearer ${jwt}`}})
         if (res.ok) {
-            // TODO Scroll up to top of screen
+            window.scrollTo(0, 0);
         }
     }
 

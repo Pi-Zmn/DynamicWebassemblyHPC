@@ -1,11 +1,17 @@
 import 'server-only'
 import {jwtVerify} from "jose";
 import {cookies} from "next/headers";
-import {User, UserRole} from "@/app/components/entities/user.entity";
+import {User} from "@/app/components/entities/user.entity";
 
 const secretKey = process.env.SECRET_KEY
 const encodedKey = new TextEncoder().encode(secretKey)
 const backendURL: string = 'http://' + process.env.NEXT_PUBLIC_BACKEND + ':' + process.env.NEXT_PUBLIC_WS_WORKER;
+
+interface CustomPayload {
+    user: User,
+    iat: number,
+    exp: number
+}
 
 export async function validateUser(formData: FormData) {
     /* Get User Credentials from Form */
@@ -53,18 +59,27 @@ export async function decrypt(session: string | undefined = '') {
         const { payload } = await jwtVerify(session, encodedKey, {
             algorithms: ['HS256'],
         })
-        return payload as unknown as User
+        return payload as unknown as CustomPayload;
     } catch (error) {
         console.log('Failed to verify session')
     }
 }
 
-export async function getSession() {
-    const session = cookies().get('session')?.value
-    if (!session) {
+export function getJWT() {
+    const jwt = cookies().get('session')?.value
+    if (!jwt) {
         return null
     } else {
-        return await decrypt(session)
+        return jwt
+    }
+}
+
+export async function getJWTPayload() {
+    const jwt = getJWT()
+    if (!jwt) {
+        return null
+    } else {
+        return await decrypt(jwt)
     }
 }
 
@@ -72,3 +87,8 @@ export async function logout() {
     /* Delete Session */
     cookies().set('session', '', {expires: new Date(0)})
 }
+
+export type AuthProps = {
+    jwt: string;
+    user: User;
+};

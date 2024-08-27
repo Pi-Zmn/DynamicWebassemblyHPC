@@ -21,9 +21,10 @@ import {useEffect, useState} from "react";
 type ActiveJobProps = {
     activeJob: ActiveJob;
     jobResults: string;
+    jwt: string;
 }
 
-export default function Activejob({ activeJob, jobResults }: ActiveJobProps) {
+export default function Activejob({ activeJob, jobResults, jwt }: ActiveJobProps) {
     const [jobsDone, setJobsDone] = useState<number>(0);
     const [jobsRunning, setJobsRunning] = useState<number>(0);
     const [showToast, setShowToast] = useState(false)
@@ -32,7 +33,7 @@ export default function Activejob({ activeJob, jobResults }: ActiveJobProps) {
 
     const backendURL: string = 'http://' + process.env.NEXT_PUBLIC_BACKEND + ':' + process.env.NEXT_PUBLIC_WS_WORKER;
     const startjob = async () => {
-        const res = await fetch(backendURL + '/job/start')
+        const res = await fetch(backendURL + '/job/start', {headers: {'Authorization': `Bearer ${jwt}`}})
         if (res.ok) {
             /* Show Toast with Text */
             setShowToast(true)
@@ -40,7 +41,7 @@ export default function Activejob({ activeJob, jobResults }: ActiveJobProps) {
         }
     }
     const stoptjob = async () => {
-        const res = await fetch(backendURL + '/job/stop')
+        const res = await fetch(backendURL + '/job/stop', {headers: {'Authorization': `Bearer ${jwt}`}})
         if (res.ok) {
             /* Show Toast with Text */
             setShowToast(true)
@@ -48,7 +49,7 @@ export default function Activejob({ activeJob, jobResults }: ActiveJobProps) {
         }
     }
     const resetJob = async () => {
-        const res = await fetch(backendURL + '/job/reset')
+        const res = await fetch(backendURL + '/job/reset', {headers: {'Authorization': `Bearer ${jwt}`}})
         if (res.ok) {
             /* Show Toast with Text */
             setShowToast(true)

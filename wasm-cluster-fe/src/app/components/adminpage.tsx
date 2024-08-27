@@ -1,20 +1,21 @@
 'use server'
 
-import {getSession} from "@/app/components/auth";
+import {getJWT, getJWTPayload} from "@/app/components/auth";
 import {redirect} from "next/navigation";
 import React from "react";
 import {UserRole} from "@/app/components/entities/user.entity";
 
 /* Component Checks for Session and User Role or Redirects to Login Page */
 export default async function AdminPage(props: any) {
-    const session = await getSession();
-    if(!session) {
+    const jwt = getJWT();
+    const jwtPayload = await getJWTPayload();
+    if(!jwt || !jwtPayload) {
         redirect('/login')
     }
-    if (UserRole[session.user.role] === 'Admin') {
+    if (jwtPayload.user.role === UserRole.Admin) {
         return (
             <>
-                {props.children}
+                {props.children(jwt, jwtPayload.user)}
             </>
         )
     } else {

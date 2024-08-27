@@ -1,12 +1,12 @@
-import {getSession, logout, validateUser} from "@/app/components/auth";
+import {getJWT, logout, validateUser} from "@/app/components/auth";
 import {redirect} from "next/navigation";
 
 export async function AuthForm() {
-    const session = await getSession()
+    const jwt = getJWT()
     return (
         <>
             {
-                !session ?
+                !jwt ?
                     <form action={async (formData) => {
                         'use server'
                         if (await validateUser(formData)) {

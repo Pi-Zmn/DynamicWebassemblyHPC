@@ -6,8 +6,9 @@ import {Card, CardBody} from "react-bootstrap";
 import {Job, Status, Task} from "@/app/components/entities/job.entity";
 import {IResult, UAParser} from "ua-parser-js";
 import {io} from "socket.io-client";
+import {AuthProps} from "@/app/components/auth";
 
-export default function ClientVideo() {
+export default function ClientVideo({jwt, user}: AuthProps) {
     /* Default Job if no Active Job */
     const noJob: Job = {
         id: 0,
