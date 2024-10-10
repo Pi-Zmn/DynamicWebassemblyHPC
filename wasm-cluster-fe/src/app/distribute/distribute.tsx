@@ -13,7 +13,7 @@ import {
     FormSelect,
     FormText
 } from "react-bootstrap";
-import {Job, Language, Status} from "@/app/components/entities/job.entity";
+import {Job, Language, ResultType, Status} from "@/app/components/entities/job.entity";
 import {useState} from "react";
 import {AuthProps} from "@/app/components/auth";
 
@@ -26,7 +26,8 @@ export default function Distribute({jwt, user}: AuthProps) {
         totalTasks: 0,
         taskBatchSize: 0,
         taskTimeOut: 0,
-        language: 1,        /* Go as Default */
+        language: 1,                    /* Go as Default */
+        resultType: ResultType.VALUE,   /* VALUE as Default */
         startTime: null,
         endTime: null,
         runTimeMS: 0

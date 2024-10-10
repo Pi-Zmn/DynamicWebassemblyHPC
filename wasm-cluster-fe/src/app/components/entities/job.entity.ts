@@ -15,6 +15,12 @@ export enum Language {
     NOT_FOUND
 }
 
+/* Job.ResultType from Backend */
+export enum ResultType {
+    VALUE,
+    PNG
+}
+
 /* JobDTO from Banckend */
 export interface Job {
     id: number;
@@ -25,6 +31,7 @@ export interface Job {
     taskBatchSize: number;
     taskTimeOut: number;
     language: Language;
+    resultType: ResultType;
     startTime: Date | null;
     endTime: Date | null;
     runTimeMS: number;

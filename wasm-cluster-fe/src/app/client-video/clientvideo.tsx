@@ -3,7 +3,7 @@
 import {useEffect, useRef, useState} from "react";
 import {YouTubeEmbed} from '@next/third-parties/google'
 import {Card, CardBody} from "react-bootstrap";
-import {Job, Status, Task} from "@/app/components/entities/job.entity";
+import {Job, ResultType, Status, Task} from "@/app/components/entities/job.entity";
 import {IResult, UAParser} from "ua-parser-js";
 import {io} from "socket.io-client";
 import {AuthProps} from "@/app/components/auth";
@@ -19,6 +19,7 @@ export default function ClientVideo({jwt, user}: AuthProps) {
         taskBatchSize: 0,
         taskTimeOut: 0,
         language: 2,
+        resultType: ResultType.VALUE,
         startTime: null,
         endTime: null,
         runTimeMS: 0
@@ -115,7 +116,20 @@ export default function ClientVideo({jwt, user}: AuthProps) {
                     case 'RUN':
                         /* WASM successfully executed and Socket connected */
                         if (eventData && socket) {
-                            socket.emit('client-result', eventData)
+                            switch (activeJob.resultType) {
+                                case ResultType.VALUE:
+                                    socket.emit('client-result', eventData)
+                                    break;
+                                case ResultType.PNG:
+                                    /* Result is a PNG file as binary Object */
+                                    eventData.result = new Blob([eventData.result], {type: 'image/png'});
+                                    socket.emit('client-result', eventData)
+                                    break;
+                                default:
+                                    /* Default case forwards result like VALUE-case */
+                                    socket.emit('client-result', eventData)
+                                    break;
+                            }
                         }
                         break;
                     default:

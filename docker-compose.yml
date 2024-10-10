@@ -21,7 +21,7 @@ services:
       context: ./wasm-server-be/
       dockerfile: Dockerfile
     environment:
-      - POSTGRES_HOST=postgres
+      - POSTGRES_HOST=192.168.178.35
     ports:
       - "3000:3000"
       - "3001:3001"
@@ -34,7 +34,7 @@ services:
       context: ./wasm-cluster-fe/
       dockerfile: Dockerfile
     environment:
-      - NEXT_PUBLIC_BACKEND='192.168.2.204'
+      - NEXT_PUBLIC_BACKEND=192.168.178.35
     ports:
       - "4000:4000"
 

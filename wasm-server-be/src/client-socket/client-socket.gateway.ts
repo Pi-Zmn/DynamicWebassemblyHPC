@@ -62,13 +62,13 @@ export class ClientSocketGateway implements OnGatewayConnection, OnGatewayDiscon
   }
 
   @SubscribeMessage('client-result')
-  handleClientResult(
+  async handleClientResult(
     @MessageBody() clientResult: Task,
     @ConnectedSocket() client: Socket
   ) {
     Logger.log(`client-WS (${client.id}) send Result`)
     /* Forward Result to JobService and send Next Task to Worker */
-    this.jobService.receiveResult(clientResult)
+    await this.jobService.receiveResult(clientResult)
     this.sendTaskToWorker(client.id)
   }
 

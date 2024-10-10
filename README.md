@@ -17,9 +17,9 @@ This Project provides a Dynamic High Performance Computing Network
 - Port: 5432
 - Run: `docker compose up`
 
-## Build Wasm
+## Build Wasm (C & C++)
 - Install `emcc` from Emscripten
-- Create Target File (.c .cpp .go etc.)
+- Create Target File (.c .cpp)
 - run `emcc hello_world.c -O2 -sMODULARIZE=1 -sEXPORT_NAME='GlueCode' -sENVIRONMENT=worker -sINVOKE_RUN=0 -sEXPORTED_RUNTIME_METHODS='["callMain"]' -o hello_world.js --closure 1`
 - creates `hello_world.wasm` & `hello_world.js` file
 - `hello_world.js` (Gluecode) initializes WASM sandbox environment (Memory, include/import) in wich the `hello_world.wasm` file can be executed
@@ -30,5 +30,23 @@ This Project provides a Dynamic High Performance Computing Network
 - - `INVOKE_RUN=0`prevents execution of 'main()'-function during initiation
 - - `EXPORTED_RUNTIME_METHODS='["callMain"]'` makes the function `GlueCode.callMain()` callable and accepts input arguments (like argc & argv)
 
+## Build Wasm (Go)
+- Install `go` version 1.11 or higher
+- Create Target File (.go)
+- Run `GOOS=js GOARCH=wasm go build -o hello_world.wasm hello_world.go`
+- Generates`hello_world.wasm` file
+- Get `wasm_exec.js`file from Go folder
+- - Located at `(go env GOROOT)/misc/wasm/wasm_exec.js`
+- - Similart to emcc's Gluecode.js File - setup for Wasm environment in JavaScript 
+
 ## Notes:
 - Device IP: `hostname -I`
+
+## Run in headless browser
+- `firefox --headless http://localhost:4000/client`
+- `chromium --headless --remote-debugging-port=9222 http://localhost:4000/client`
+- - remote debugging leaves connection open
+
+## Run in text based Browser
+- browsh - Firefox
+- - `browsh --startup-url http://localhost:4000/client`

@@ -1,10 +1,10 @@
 'use client'
 
-import {Card, CardBody, CardSubtitle, CardTitle, Button, ListGroup, ListGroupItem} from "react-bootstrap";
+import {Card, CardBody, CardSubtitle, CardTitle, ListGroup, ListGroupItem} from "react-bootstrap";
 import {useEffect, useRef, useState} from "react";
 import {io} from "socket.io-client";
 import {IResult, UAParser} from 'ua-parser-js';
-import {Job, Status, Task} from "@/app/components/entities/job.entity";
+import {Job, ResultType, Status, Task} from "@/app/components/entities/job.entity";
 import Image from "next/image";
 import {AuthProps} from "@/app/components/auth";
 
@@ -19,6 +19,7 @@ export default function Client({jwt, user}: AuthProps) {
         taskBatchSize: 0,
         taskTimeOut: 0,
         language: 2,
+        resultType: ResultType.VALUE,
         startTime: null,
         endTime: null,
         runTimeMS: 0
@@ -166,7 +167,20 @@ export default function Client({jwt, user}: AuthProps) {
                         }
                         /* WASM successfully executed and Socket connected */
                         if (eventData && socket) {
-                            socket.emit('client-result', eventData)
+                            switch (activeJob.resultType) {
+                                case ResultType.VALUE:
+                                    socket.emit('client-result', eventData)
+                                    break;
+                                case ResultType.PNG:
+                                    /* Result is a PNG file as binary Object */
+                                    eventData.result = new Blob([eventData.result], {type: 'image/png'});
+                                    socket.emit('client-result', eventData)
+                                    break;
+                                default:
+                                    /* Default case forwards result like VALUE-case */
+                                    socket.emit('client-result', eventData)
+                                    break;
+                            }
                         }
                         break;
                     default:

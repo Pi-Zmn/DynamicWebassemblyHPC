@@ -1,4 +1,4 @@
-import { Job, Language, Status } from "../entities/job.entity";
+import { Job, Language, Status, ResultType } from "../entities/job.entity";
 
 export class JobDto {
     constructor(job: Job) {
@@ -10,6 +10,7 @@ export class JobDto {
         this.taskBatchSize = job.taskBatchSize;
         this.taskTimeOut = job.taskTimeOut;
         this.language = job.language;
+        this.resultType = job.resultType;
         this.startTime = job.startTime;
         this.endTime = job.endTime;
         this.runTimeMS = job.runTimeMS;
@@ -30,6 +31,8 @@ export class JobDto {
     taskTimeOut: number;
 
     language: Language;
+
+    resultType: ResultType
 
     startTime: Date | null;
 

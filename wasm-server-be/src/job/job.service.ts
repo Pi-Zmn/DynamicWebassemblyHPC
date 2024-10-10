@@ -1,12 +1,12 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { JobDto } from './dto/job.dto';
-import { Job, Status } from './entities/job.entity';
+import { Job, ResultType, Status } from './entities/job.entity';
 import { Task } from './entities/task.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import * as path from 'path';
-import { createWriteStream } from 'fs';
+import { createWriteStream, writeFile, writeFileSync } from 'fs';
 
 @Injectable()
 export class JobService {
@@ -27,6 +27,7 @@ export class JobService {
     newJob.taskBatchSize = jobDto.taskBatchSize;
     newJob.taskTimeOut = jobDto.taskTimeOut;
     newJob.language = jobDto.language;
+    newJob.resultType = jobDto.resultType;
     newJob.startTime = jobDto.startTime;
     newJob.endTime = jobDto.endTime;
     newJob.runTimeMS = jobDto.runTimeMS;
@@ -56,6 +57,7 @@ export class JobService {
     jobToUpdate.taskBatchSize = jobDto.taskBatchSize;
     jobToUpdate.taskTimeOut = jobDto.taskTimeOut;
     jobToUpdate.language = jobDto.language;
+    jobToUpdate.resultType = jobDto.resultType;
     jobToUpdate.startTime = jobDto.startTime;
     jobToUpdate.endTime = jobDto.endTime;
     jobToUpdate.runTimeMS = jobDto.runTimeMS;
@@ -142,14 +144,55 @@ export class JobService {
     }
   }
 
-  receiveResult(task: Task) {
+  async receiveResult(task: Task) {
     if(this.activeJob && this.activeJob.id == task.jobId && Status[this.activeJob.status] != 'DONE') {
-      // TODO combine bouth find loops to only one for performance?
+      // TODO combine both find loops to only one for performance?
       const updateTaskIndex = this.activeJob.tasks.findIndex((t) => !t.done && t.id == task.id)
       if (updateTaskIndex >= 0) {
         /* Replace scheduled Task with Result if not already done */
-        this.activeJob.tasks[updateTaskIndex] = task
+        switch(this.activeJob.resultType) {
+          case ResultType.VALUE:
+            /* Forward Worker Result to Task result */
+            this.activeJob.tasks[updateTaskIndex] = task
+            break;
+          case ResultType.PNG:
+            /* Result Value holds BLOB of a PNG File:
+            * 1. Save PNG in results Folder
+            * 2. Set Filename as result-Value of Task */
+            const filePath = path.join(__dirname, '../../wasm', this.activeJob.name, 'results', `Task-${task.id}.png`)
+            try {
+              writeFileSync(filePath, task.result);
+              console.log(`PNG file saved file of task #: ${task.id}`);
+              this.activeJob.tasks[updateTaskIndex].done = task.done;
+              this.activeJob.tasks[updateTaskIndex].runTime = task.runTime;
+              this.activeJob.tasks[updateTaskIndex].result = filePath;
+            } catch (err) {
+              console.error(`Error saving PNG file of task #: ${task.id}`, err);
+              // TODO: Handle Error Case - currently: Don't use Result on Error (?)
+            }
+            /*writeFile(filePath, task.result, (err) => {
+              if (err) {
+                console.error(`Error saving PNG file of task #: ${task.id}`, err);
+                // TODO: Handle Error Case - currently: Don't use Result on Error (?)
+              } else {
+                console.log(`PNG file saved file of task #: ${task.id}`);
+                this.activeJob.tasks[updateTaskIndex].done = task.done;
+                this.activeJob.tasks[updateTaskIndex].runTime = task.runTime;
+                this.activeJob.tasks[updateTaskIndex].result = filePath;
+              }
+            });*/
+            break;
+          default:
+            /* Default Case like VALUE case */
+            this.activeJob.tasks[updateTaskIndex] = task
+            break;
+        }
       }
+
+      Logger.log(`Got Result #${task.id}:`)
+      this.activeJob.tasks.forEach((task: Task) => {
+        Logger.log(`#${task.id}: ${task.done}`)
+      })
       
       /* Check if all tasks are done */
       const pendingTaskIndex = this.activeJob.tasks.findIndex((t) => !t.done)
@@ -166,7 +209,7 @@ export class JobService {
     }
   }
 
-  /* Saves all Results from Task in .txt and Updates Job Progress */ 
+  /* Saves all Results from Task in .txt and Updates Job Progress */
   async saveResults() {
     if (this.activeJob && Status[this.activeJob.status] != 'RUNNING') {
       const resultStream = createWriteStream(

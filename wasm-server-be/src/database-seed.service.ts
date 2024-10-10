@@ -2,7 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User, UserRole } from './user/entities/user.entity';
-import { Job, Language, Status } from './job/entities/job.entity';
+import { Job, Language, ResultType, Status } from './job/entities/job.entity';
 
 @Injectable()
 export class DatabaseSeedService {
@@ -37,6 +37,7 @@ export class DatabaseSeedService {
                 taskBatchSize: 3,
                 taskTimeOut: 60,
                 language: Language.C_CPP,
+                resultType: ResultType.VALUE,
                 startTime: null,
                 endTime: null,
                 runTimeMS: 0,
@@ -51,6 +52,7 @@ export class DatabaseSeedService {
                 taskBatchSize: 3,
                 taskTimeOut: 60,
                 language: Language.GO,
+                resultType: ResultType.VALUE,
                 startTime: null,
                 endTime: null,
                 runTimeMS: 0,
@@ -65,6 +67,7 @@ export class DatabaseSeedService {
                 taskBatchSize: 3,
                 taskTimeOut: 60,
                 language: Language.PYTHON,
+                resultType: ResultType.VALUE,
                 startTime: null,
                 endTime: null,
                 runTimeMS: 0,
@@ -79,11 +82,42 @@ export class DatabaseSeedService {
                 taskBatchSize: 3,
                 taskTimeOut: 60,
                 language: Language.GO,
+                resultType: ResultType.VALUE,
                 startTime: null,
                 endTime: null,
                 runTimeMS: 0,
                 status: Status.PENDING,
                 tasks: []
+            },
+            {
+              id: 5,
+              name: 'mandelbrot-cpp',
+              progress: 0,
+              totalTasks: 0,
+              taskBatchSize: 10,
+              taskTimeOut: 60,
+              language: Language.C_CPP,
+              resultType: ResultType.VALUE,
+              startTime: null,
+              endTime: null,
+              runTimeMS: 0,
+              status: Status.PENDING,
+              tasks: []
+            },
+            {
+              id: 6,
+              name: 'mandelbrot4x4-go',
+              progress: 0,
+              totalTasks: 0,
+              taskBatchSize: 10,
+              taskTimeOut: 120,
+              language: Language.GO,
+              resultType: ResultType.PNG,
+              startTime: null,
+              endTime: null,
+              runTimeMS: 0,
+              status: Status.PENDING,
+              tasks: []
             }
         ]
         await this.jobRepository.save(jobs);

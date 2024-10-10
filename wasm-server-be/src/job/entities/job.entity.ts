@@ -15,6 +15,11 @@ export enum Language {
     PYTHON
 }
 
+export enum ResultType {
+    VALUE,
+    PNG
+}
+
 @Entity()
 export class Job {
     @PrimaryGeneratedColumn()
@@ -36,7 +41,10 @@ export class Job {
     taskTimeOut: number;
 
     @Column()
-    language: Language
+    language: Language;
+
+    @Column()
+    resultType: ResultType;
 
     @Column({nullable: true})
     startTime: Date | null;
