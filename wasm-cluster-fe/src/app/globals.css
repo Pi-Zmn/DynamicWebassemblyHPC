@@ -92,3 +92,13 @@
    /* flex-grow: 1;*/
 }
 
+/* Mandelbrot & InteractiveCanvas Component */
+.mandelbrot-thumbnail-container {
+    position:relative;
+}
+
+.mandelbrot-thumbnail {
+    position:absolute;
+    top:0;
+    left:0;
+}

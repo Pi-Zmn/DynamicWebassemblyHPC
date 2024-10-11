@@ -13,7 +13,8 @@ import { GatewayUserGuard } from 'src/auth-guard/gateway-user.guard';
 @WebSocketGateway({
   cors: {
     origin: '*'
-  }
+  },
+  maxHttpBufferSize: 1e8
 })
 @UseGuards(GatewayUserGuard)
 export class ClientSocketGateway implements OnGatewayConnection, OnGatewayDisconnect {

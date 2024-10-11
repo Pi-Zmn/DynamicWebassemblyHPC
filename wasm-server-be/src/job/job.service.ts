@@ -162,12 +162,12 @@ export class JobService {
             const filePath = path.join(__dirname, '../../wasm', this.activeJob.name, 'results', `Task-${task.id}.png`)
             try {
               writeFileSync(filePath, task.result);
-              console.log(`PNG file saved file of task #: ${task.id}`);
+              Logger.log(`PNG file saved file of task #: ${task.id}`);
               this.activeJob.tasks[updateTaskIndex].done = task.done;
               this.activeJob.tasks[updateTaskIndex].runTime = task.runTime;
               this.activeJob.tasks[updateTaskIndex].result = filePath;
             } catch (err) {
-              console.error(`Error saving PNG file of task #: ${task.id}`, err);
+              Logger.error(`Error saving PNG file of task #: ${task.id}`, err);
               // TODO: Handle Error Case - currently: Don't use Result on Error (?)
             }
             /*writeFile(filePath, task.result, (err) => {
@@ -188,11 +188,6 @@ export class JobService {
             break;
         }
       }
-
-      Logger.log(`Got Result #${task.id}:`)
-      this.activeJob.tasks.forEach((task: Task) => {
-        Logger.log(`#${task.id}: ${task.done}`)
-      })
       
       /* Check if all tasks are done */
       const pendingTaskIndex = this.activeJob.tasks.findIndex((t) => !t.done)

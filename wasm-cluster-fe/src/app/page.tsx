@@ -21,6 +21,7 @@ export default function Home() {
                               <li><a href="/client">Client Page</a></li>
                               <li><a href="/client-video">Client Video Page</a></li>
                               <li><a href="/distribute">Distribute Page</a></li>
+                              <li><a href="/mandelbrot">Mandelbrot Page</a></li>
                           </ul>
                           <br/>
                           <form action={async (formData) => {
