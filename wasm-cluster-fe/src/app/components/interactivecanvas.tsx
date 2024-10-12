@@ -1,8 +1,6 @@
 "use client"
 
-import React, {useEffect, useRef, useState} from 'react';
-import Image from "next/image";
-import {Job, Status} from "@/app/components/entities/job.entity";
+import React, {useRef, useState} from 'react';
 
 export interface InteractiveCanvasProps {
     width: number;
@@ -82,7 +80,7 @@ export default function InteractiveCanvas({width, height, size, jobName}: Intera
         <div>
             <h1>Mandelbrot {size}x{size}</h1>
             <div className="mandelbrot-thumbnail-container" style={{width: width + 'px', height: height + 'px'}}>
-                <Image
+                <img
                     className="mandelbrot-thumbnail"
                     src={srcPrefix + `${thumbnailIndex}.png`}
                     alt={"Mandelbrot Thumbnail Image"}
@@ -102,7 +100,7 @@ export default function InteractiveCanvas({width, height, size, jobName}: Intera
             {imgSectorIndex >= 0 ?
                 <div>
                     <h1>Sector #{imgSectorIndex}</h1>
-                    <Image
+                    <img
                         src={srcPrefix + `${imgSectorIndex}.png`}
                         alt={"Mandelbrot Thumbnail Image"}
                         ref={imgSectorRef}
