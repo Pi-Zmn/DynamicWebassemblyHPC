@@ -5,6 +5,7 @@ import {
 } from '@nestjs/platform-fastify';
 
 import { AppModule } from './app.module';
+import { join } from 'path';
 
 
 async function bootstrap() {
@@ -20,6 +21,12 @@ async function bootstrap() {
     preflightContinue: false,
     optionsSuccessStatus: 204
   })
+
+  app.useStaticAssets({
+    root: join(__dirname, '..', 'wasm'),
+    prefix: '/wasm/',
+  });
+
   await app.listen(3000, '0.0.0.0');
 }
 bootstrap();

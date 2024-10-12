@@ -28,10 +28,13 @@ import { DatabaseSeedService } from './database-seed.service';
     TypeOrmModule.forFeature([User]),
     TypeOrmModule.forFeature([Job]),
     EventEmitterModule.forRoot(),
-    ServeStaticModule.forRoot({
+    /*ServeStaticModule.forRoot({
       rootPath: join(__dirname, '..', 'wasm'),
-      serveRoot: '/wasm/'
-    }),
+      serveRoot: '/wasm/',
+      serveStaticOptions: {
+        index: false
+      },
+    }),*/
   ],
   controllers: [AppController],
   providers: [AppService, DatabaseSeedService],
