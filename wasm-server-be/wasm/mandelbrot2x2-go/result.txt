@@ -1,5 +1,0 @@
-"/home/pi/Master_Hda/MasterArbeit/DynamicWebassemblyHPC/wasm-server-be/wasm/mandelbrot2x2-go/results/Task-0.png"
-"/home/pi/Master_Hda/MasterArbeit/DynamicWebassemblyHPC/wasm-server-be/wasm/mandelbrot2x2-go/results/Task-1.png"
-"/home/pi/Master_Hda/MasterArbeit/DynamicWebassemblyHPC/wasm-server-be/wasm/mandelbrot2x2-go/results/Task-2.png"
-"/home/pi/Master_Hda/MasterArbeit/DynamicWebassemblyHPC/wasm-server-be/wasm/mandelbrot2x2-go/results/Task-3.png"
-"/home/pi/Master_Hda/MasterArbeit/DynamicWebassemblyHPC/wasm-server-be/wasm/mandelbrot2x2-go/results/Task-4.png"
