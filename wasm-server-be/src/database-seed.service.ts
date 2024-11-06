@@ -163,6 +163,21 @@ export class DatabaseSeedService {
             runTimeMS: 0,
             status: Status.PENDING,
             tasks: []
+          },
+          {
+            id: 10,
+            name: 'mandelbrot10x10-go',
+            progress: 0,
+            totalTasks: 0,
+            taskBatchSize: 101,
+            taskTimeOut: 180,
+            language: Language.GO,
+            resultType: ResultType.PNG,
+            startTime: null,
+            endTime: null,
+            runTimeMS: 0,
+            status: Status.PENDING,
+            tasks: []
           }
         ]
         await this.jobRepository.save(jobs);

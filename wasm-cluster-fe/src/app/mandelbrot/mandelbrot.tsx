@@ -55,6 +55,7 @@ export default function Mandelbrot({jwt, user}: AuthProps) {
                 <DropdownButton title="Select Grid Option">
                     <DropdownItem onClick={() => selectGrid(2)} >Mandelbrot 2x2</DropdownItem>
                     <DropdownItem onClick={() => selectGrid(4)} >Mandelbrot 4x4</DropdownItem>
+                    <DropdownItem onClick={() => selectGrid(10)} >Mandelbrot 10x10</DropdownItem>
                     <DropdownItem onClick={() => selectGrid(20)} >Mandelbrot 20x20</DropdownItem>
                     <DropdownItem onClick={() => selectGrid(100)} >Mandelbrot 100x100</DropdownItem>
                 </DropdownButton>
