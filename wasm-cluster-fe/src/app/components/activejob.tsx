@@ -25,8 +25,8 @@ type ActiveJobProps = {
 }
 
 export default function Activejob({ activeJob, jobResults, jwt }: ActiveJobProps) {
-    const [jobsDone, setJobsDone] = useState<number>(0);
-    const [jobsRunning, setJobsRunning] = useState<number>(0);
+    const [tasksDone, setTasksDone] = useState<number>(0);
+    const [tasksRunning, setTasksRunning] = useState<number>(0);
     const [showToast, setShowToast] = useState(false)
     const [toastText, setToastText] = useState("")
 
@@ -59,17 +59,17 @@ export default function Activejob({ activeJob, jobResults, jwt }: ActiveJobProps
 
     const calculateValues = () => {
         if (activeJob.tasks){
-            let jD = 0
-            let jR = 0
+            let tD = 0
+            let tR = 0
             activeJob.tasks.forEach((t: Task) => {
                 if (t.done) {
-                    jD += 1
+                    tD += 1
                 } else if (t.scheduledAt) {
-                    jR += 1
+                    tR += 1
                 }
             })
-            setJobsDone(jD)
-            setJobsRunning(jR)
+            setTasksDone(tD)
+            setTasksRunning(tR)
         }
     }
 
@@ -124,12 +124,12 @@ export default function Activejob({ activeJob, jobResults, jwt }: ActiveJobProps
                             <>
                                 <ListGroup style={{marginTop: '20px'}}>
                                     <ListGroupItem>
-                                        Jobs Done:&emsp;&emsp;&emsp;
-                                        {activeJob.progress + jobsDone}
+                                        Tasks Done:&emsp;&emsp;&emsp;
+                                        {activeJob.progress + tasksDone}
                                     </ListGroupItem>
                                     <ListGroupItem>
-                                        Jobs Running:&emsp;&emsp;&emsp;
-                                        {jobsRunning}
+                                        Tasks Scheduled:&emsp;&emsp;&emsp;
+                                        {tasksRunning}
                                     </ListGroupItem>
                                 </ListGroup>
                                 <br></br>
@@ -137,14 +137,14 @@ export default function Activejob({ activeJob, jobResults, jwt }: ActiveJobProps
                                     <ProgressBar striped variant="success"
                                                  min={0}
                                                  max={activeJob.totalTasks}
-                                                 now={activeJob.progress + jobsDone}
+                                                 now={activeJob.progress + tasksDone}
                                                  key={1}/>
                                     <ProgressBar animated variant="info"
                                                  min={0}
                                                  max={activeJob.totalTasks}
-                                                 now={jobsRunning} key={2}/>
+                                                 now={tasksRunning} key={2}/>
                                 </ProgressBar>
-                                <p className="progress-label">{activeJob.progress + jobsDone}/{activeJob.totalTasks}</p>
+                                <p className="progress-label">{activeJob.progress + tasksDone}/{activeJob.totalTasks}</p>
                             </>
                     }
                     <div className="button-container">
