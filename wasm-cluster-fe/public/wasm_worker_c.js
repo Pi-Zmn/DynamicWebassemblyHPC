@@ -35,7 +35,7 @@ self.onmessage = async function(event) {
                 const startTime = performance.now();
                 let task = eventData
                 /* Execute Wasm-main with Input Args */
-                task.result = await myModule.callMain(task.input)
+                task.result = await myModule.wasmMain(task.input)
                 const endTime = performance.now();
                 console.log(`Execution time: ${endTime - startTime} ms`);
                 task.done = true

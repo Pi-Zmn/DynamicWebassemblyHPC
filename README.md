@@ -29,6 +29,8 @@ This Project provides a Dynamic High Performance Computing Network
 - - `ENVIRONMENT=worker` sets the expected environment. Webassembly code is executed in a Webworker.
 - - `INVOKE_RUN=0`prevents execution of 'main()'-function during initiation
 - - `EXPORTED_RUNTIME_METHODS='["callMain"]'` makes the function `GlueCode.callMain()` callable and accepts input arguments (like argc & argv)
+- `emcc mandelbrot2x2-cpp.cpp lodepng.cpp -o mandelbrot2x2-cpp.js     -s WASM=1     -s NO_EXIT_RUNTIME=1     -s "EXPORTED_RUNTIME_METHODS=['ccall', 'cwrap']"     -s EXPORTED_FUNCTIONS="['_malloc', '_free']"     -O3     -s ALLOW_MEMORY_GROWTH=1     -s EXPORT_NAME='GlueCode'     -s MODULARIZE=1     -s ENVIRONMENT=worker --bind`
+- -`--bind` to bind external libary file
 
 ## Build Wasm (Go)
 - Install `go` version 1.11 or higher
@@ -44,6 +46,7 @@ This Project provides a Dynamic High Performance Computing Network
 
 ## Run in headless browser
 - `firefox --headless http://localhost:4000/client`
+- - Multi tab `firefox --headless -new-tab -url http://localhost:4000/client -new-tab -url http://localhost:4000/client`
 - `chromium --headless --remote-debugging-port=9222 http://localhost:4000/client`
 - - remote debugging leaves connection open
 

@@ -15,8 +15,8 @@ export default function Mandelbrot({jwt, user}: AuthProps) {
     const [showCanvas, setShowCanvas] = useState<boolean>(false);
     const [jobs, setJobs] = useState<Job[]>([]);
 
-    const selectGrid = (s: number) => {
-        const jname = `mandelbrot${s}x${s}-go`
+    const selectGrid = (s: number, languange: string) => {
+        const jname = `mandelbrot${s}x${s}-${languange}`
         setShowCanvas(checkIfJobIsDone(jname))
         setSize(s)
         setjobName(jname)
@@ -53,11 +53,13 @@ export default function Mandelbrot({jwt, user}: AuthProps) {
             <CardBody>
                 <CardText>Below is a interactive graph of the Mandelbrot Set.</CardText>
                 <DropdownButton title="Select Grid Option">
-                    <DropdownItem onClick={() => selectGrid(2)} >Mandelbrot 2x2</DropdownItem>
-                    <DropdownItem onClick={() => selectGrid(4)} >Mandelbrot 4x4</DropdownItem>
-                    <DropdownItem onClick={() => selectGrid(10)} >Mandelbrot 10x10</DropdownItem>
-                    <DropdownItem onClick={() => selectGrid(20)} >Mandelbrot 20x20</DropdownItem>
-                    <DropdownItem onClick={() => selectGrid(100)} >Mandelbrot 100x100</DropdownItem>
+                    <DropdownItem onClick={() => selectGrid(2, "cpp")} >CPP: Mandelbrot 2x2</DropdownItem>
+                    <DropdownItem onClick={() => selectGrid(10, "cpp")} >CPP: Mandelbrot 10x10</DropdownItem>
+                    <DropdownItem onClick={() => selectGrid(2, "go")} >GO: Mandelbrot 2x2</DropdownItem>
+                    <DropdownItem onClick={() => selectGrid(4, "go")} >GO: Mandelbrot 4x4</DropdownItem>
+                    <DropdownItem onClick={() => selectGrid(10, "go")} >GO: Mandelbrot 10x10</DropdownItem>
+                    <DropdownItem onClick={() => selectGrid(20, "go")} >GO: Mandelbrot 20x20</DropdownItem>
+                    <DropdownItem onClick={() => selectGrid(100, "go")} >GO: Mandelbrot 100x100</DropdownItem>
                 </DropdownButton>
                 {
                     size > 0 ?

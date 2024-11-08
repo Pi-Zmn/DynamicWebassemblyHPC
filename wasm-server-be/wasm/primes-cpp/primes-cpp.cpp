@@ -1,4 +1,5 @@
-#include <emscripten.h>
+#include <emscripten/bind.h>
+#include <emscripten/val.h>
 
 #include <iostream>
 #include <vector>
@@ -9,7 +10,7 @@ bool is_prime(unsigned long n) {
     if( n <= 1 ) {
         return false;
     }
-    for(unsigned long i = 2; i < std::sqrt(n) + 1; i++) {
+    for(unsigned long i = 2; i*i <= n; i++) {
         if(n % i == 0) {
             return false;
         }
@@ -17,28 +18,44 @@ bool is_prime(unsigned long n) {
     return true;
 }
 
-void generate_primes(unsigned long start,unsigned long end, unsigned long& result){
-    for (unsigned long i = start; i < end + 1; i++) {
+emscripten::val generate_primes(unsigned long start,unsigned long end){
+    emscripten::val primes = emscripten::val::array();
+    size_t index = 0;
+    for (unsigned long i = start; i <= end; i++) {
         if (is_prime(i)) {
-            result++;
+            primes.set(index++, i);
         }
     }
+    return primes;
 }
 
-EMSCRIPTEN_KEEPALIVE
-unsigned long wasmMain(unsigned long start_num, unsigned long end_num) {
-    unsigned long result = 0;
+// WebAssembly exposed function
+emscripten::val wasmMain(emscripten::val args) {
+    emscripten::val result = emscripten::val::array();
+
+    // Input validation
+    if (!args.isArray()) {
+        std::cerr << "Error: Expected array of arguments" << std::endl;
+        return result;
+    }
+
+    // Get array length using proper method
+    int argsLength = args["length"].as<int>();
+
+    if (argsLength < 2) {
+        std::cerr << "Error: Not enough arguments" << std::endl;
+        return result;
+    }
+
+    // Extract arguments
+    int start_num = args[0].as<int>();
+    int end_num = args[1].as<int>();
+
     std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
-    generate_primes(start_num, end_num, result);
+    result = generate_primes(start_num, end_num);
     std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
 
-    /*
-    for (unsigned long i : result) {
-        std::cout << i << std::endl;
-    }
-    */
-
-    std::cout << "Found " << result << " Prime numbers in range from "
+    std::cout << "Found " << result["length"].as<int>() << " Prime numbers in range from "
     << start_num << " to " << end_num << "!" << std::endl;
     std::cout << "Time difference = " << std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count() << "[µs]" << std::endl;
     std::cout << "Time difference = " << std::chrono::duration_cast<std::chrono::nanoseconds> (end - begin).count() << "[ns]" << std::endl;
@@ -47,16 +64,7 @@ unsigned long wasmMain(unsigned long start_num, unsigned long end_num) {
     return result;
 }
 
-int main(int argc, char *argv[]) {
-    unsigned long start_num = 1;
-    unsigned long end_num = 1000;
-
-    if (argc == 3) {
-        start_num = std::stoul (argv[1],nullptr,0);
-        end_num = std::stoul (argv[2],nullptr,0);
-    }
-
-    unsigned long result = wasmMain(start_num, end_num);
-
-    return result;
+EMSCRIPTEN_BINDINGS(module) {
+    function("wasmMain", &wasmMain);
 }
+
