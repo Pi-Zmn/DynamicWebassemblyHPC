@@ -20,7 +20,7 @@ This Project provides a Dynamic High Performance Computing Network
 ## Build Wasm (C & C++)
 - Install `emcc` from Emscripten
 - Create Target File (.c .cpp)
-- run `emcc hello_world.c -O2 -sMODULARIZE=1 -sEXPORT_NAME='GlueCode' -sENVIRONMENT=worker -sINVOKE_RUN=0 -sEXPORTED_RUNTIME_METHODS='["callMain"]' -o hello_world.js --closure 1`
+- run `emcc primes-cpp.cpp -o primes-cpp.js -s WASM=1 -s NO_EXIT_RUNTIME=1 -s "EXPORTED_RUNTIME_METHODS=['ccall', 'cwrap']" -s EXPORTED_FUNCTIONS="['_malloc', '_free']" -O3 -s ALLOW_MEMORY_GROWTH=1 -s EXPORT_NAME='GlueCode' -s MODULARIZE=1 -s ENVIRONMENT=worker -std=c++17 --bind`
 - creates `hello_world.wasm` & `hello_world.js` file
 - `hello_world.js` (Gluecode) initializes WASM sandbox environment (Memory, include/import) in wich the `hello_world.wasm` file can be executed
 - - `-O2` & `--closure 1` heavely reduce the size of bouth generated files
