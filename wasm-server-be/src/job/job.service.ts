@@ -120,7 +120,7 @@ export class JobService {
     /* only get task from a active and running Job */
     if(this.activeJob && Status[this.activeJob.status] == 'RUNNING') {
       // TODO: Improve Scheduling Algorithm (Currently FIFO?)
-
+      const now = new Date()
       /* Get first Task that is not done and not scheduled */
       let nextTaskIndex = this.activeJob.tasks.findIndex((t) => {
         if(!t.done && t.scheduledAt === undefined) {
@@ -131,7 +131,6 @@ export class JobService {
 
       if (nextTaskIndex == -1) {
         /* Get first Task where timeout period is expired */
-        const now = new Date()
         nextTaskIndex = this.activeJob.tasks.findIndex((t) => {
           if(!t.done) {
             if(t.scheduledAt &&
