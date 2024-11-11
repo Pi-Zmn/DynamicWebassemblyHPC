@@ -76,6 +76,21 @@ export class DatabaseSeedService {
           },
           {
             id: 4,
+            name: 'mandelbrotHeavy-cpp',
+            progress: 0,
+            totalTasks: 0,
+            taskBatchSize: 1,
+            taskTimeOut: 60,
+            language: Language.C_CPP,
+            resultType: ResultType.PNG,
+            startTime: null,
+            endTime: null,
+            runTimeMS: 0,
+            status: Status.PENDING,
+            tasks: []
+          },
+          {
+            id: 5,
             name: 'mandelbrot-go',
             progress: 0,
             totalTasks: 0,
@@ -90,7 +105,7 @@ export class DatabaseSeedService {
             tasks: []
           },
           {
-            id: 5,
+            id: 6,
             name: 'mandelbrot2x2-go',
             progress: 0,
             totalTasks: 0,
@@ -105,7 +120,7 @@ export class DatabaseSeedService {
             tasks: []
           },
           {
-            id: 6,
+            id: 7,
             name: 'mandelbrot4x4-go',
             progress: 0,
             totalTasks: 0,
@@ -120,7 +135,7 @@ export class DatabaseSeedService {
             tasks: []
           },
           {
-            id: 7,
+            id: 8,
             name: 'mandelbrot10x10-go',
             progress: 0,
             totalTasks: 0,
@@ -135,7 +150,7 @@ export class DatabaseSeedService {
             tasks: []
           },
           {
-            id: 8,
+            id: 9,
             name: 'mandelbrot20x20-go',
             progress: 0,
             totalTasks: 0,
@@ -150,7 +165,7 @@ export class DatabaseSeedService {
             tasks: []
           },
           {
-            id: 9,
+            id: 10,
             name: 'mandelbrot100x100-go',
             progress: 0,
             totalTasks: 0,
@@ -165,7 +180,22 @@ export class DatabaseSeedService {
             tasks: []
           },
           {
-            id: 10,
+            id: 11,
+            name: 'mandelbrotHeavy-go',
+            progress: 0,
+            totalTasks: 0,
+            taskBatchSize: 1,
+            taskTimeOut: 60,
+            language: Language.GO,
+            resultType: ResultType.PNG,
+            startTime: null,
+            endTime: null,
+            runTimeMS: 0,
+            status: Status.PENDING,
+            tasks: []
+          },
+          {
+            id: 12,
             name: 'primes-cpp',
             progress: 0,
             totalTasks: 0,
@@ -180,7 +210,7 @@ export class DatabaseSeedService {
             tasks: []
           },
           {
-            id: 11,
+            id: 13,
             name: 'primes-go',
             progress: 0,
             totalTasks: 0,
@@ -195,7 +225,7 @@ export class DatabaseSeedService {
             tasks: []
           },
           {
-            id: 12,
+            id: 14,
             name: 'primes-py',
             progress: 0,
             totalTasks: 0,
