@@ -1,2 +1,2 @@
 Generating PNG #0 of Mandelbrot set...
-Mandelbrot PNG generation completed in 7611ms
+Mandelbrot PNG generation completed in 7800ms

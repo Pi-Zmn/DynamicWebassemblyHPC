@@ -18,10 +18,10 @@ func main() {
     width := 1500
     height := 1500
     maxIterations := 3000
-    realMin := -2.0
-    realMax := 1.0
-    imagMin := -1.5
-    imagMax := 1.5
+    realMin := -0.5
+    realMax := -0.2
+    imagMin := -0.0
+    imagMax := 0.3
     counter := 0
 
     generatePNG(counter, width, height, maxIterations, realMin, realMax, imagMin, imagMax)

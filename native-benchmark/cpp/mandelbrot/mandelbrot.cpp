@@ -36,7 +36,7 @@ int main() {
     const int height = 1500;
     const int maxIterations = 3000;
     const double realMin = -2.0;
-    const double realMax = 1.0;
+    const double realMax = 1;
     const double imagMin = -1.5;
     const double imagMax = 1.5;
     int counter = 0;    
