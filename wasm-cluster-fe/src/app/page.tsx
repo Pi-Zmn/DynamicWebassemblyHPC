@@ -20,6 +20,7 @@ export default function Home() {
                               <li><a href="/dashboard">Dashboard</a></li>
                               <li><a href="/client">Client Page</a></li>
                               <li><a href="/client-video">Client Video Page</a></li>
+                              <li><a href="/client-empty">Client Page with limited GUI</a></li>
                               <li><a href="/distribute">Distribute Page</a></li>
                               <li><a href="/mandelbrot">Mandelbrot Page</a></li>
                           </ul>
