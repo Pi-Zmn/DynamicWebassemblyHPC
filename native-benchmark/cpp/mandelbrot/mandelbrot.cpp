@@ -39,10 +39,7 @@ int main() {
     const double realMax = 1.0;
     const double imagMin = -1.5;
     const double imagMax = 1.5;
-    const int gridSize = 2;
-    int counter = 0;
-    const double realStep = (realMax - realMin) / gridSize;
-    const double imagStep = (imagMax - imagMin) / gridSize;
+    int counter = 0;    
 
     generatePNG(counter++, width, height, maxIterations, realMin, realMax, imagMin, imagMax);
 

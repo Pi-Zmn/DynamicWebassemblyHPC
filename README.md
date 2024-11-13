@@ -1,5 +1,5 @@
 # DynamicWebassemblyHPC
-This Project provides a Dynamic High Performance Computing Network
+This Project provides a Volunteer Computing Platform that is executed in a Web Browser
 
 ## Frontend (Next.Js)
 - Port: 4000
